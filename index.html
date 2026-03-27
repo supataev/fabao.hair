@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Fabao — Премиальные растительные средства от выпадения волос. ZhangGuang 101 в Кыргызстане. Проверено в 65 странах."/>
+  <title>Fabao — Herbal Hair Care · Kyrgyzstan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1714;
+      --paper: #f7f3ec;
+      --cream: #ede7d9;
+      --sage: #7a8c6e;
+      --gold: #b8954a;
+      --gold-light: #d4b06a;
+      --rust: #9c4a2a;
+      --muted: #8a8070;
+      --border: rgba(26,23,20,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Jost', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1000; opacity: 0.6;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 56px;
+      background: rgba(247,243,236,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 500;
+      letter-spacing: 6px; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+    }
+    .nav-logo em { font-style: italic; color: var(--gold); }
+    .nav-links { display: flex; gap: 36px; align-items: center; }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-ig {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+      color: var(--ink) !important;
+      border: 1px solid var(--border);
+      padding: 8px 18px; border-radius: 100px;
+      transition: background 0.25s, border-color 0.25s !important;
+    }
+    .nav-ig:hover { background: var(--ink); color: var(--paper) !important; border-color: var(--ink); }
+    .nav-ig svg { width: 14px; height: 14px; }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
+      padding: 80px 56px;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; z-index: 2;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+      border: 1px solid rgba(184,149,74,0.3);
+      background: rgba(184,149,74,0.06);
+      padding: 8px 16px; border-radius: 100px;
+      margin-bottom: 36px; width: fit-content;
+    }
+    .hero-badge::before { content: '✦'; font-size: 8px; }
+
+    .hero-h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(58px, 6.5vw, 96px);
+      font-weight: 300; line-height: 1.02;
+      letter-spacing: -1px; margin-bottom: 28px;
+    }
+    .hero-h1 em { font-style: italic; color: var(--sage); }
+
+    .hero-desc {
+      font-size: 15px; font-weight: 300;
+      line-height: 1.85; color: var(--muted);
+      max-width: 420px; margin-bottom: 48px;
+    }
+    .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+    .btn-gold {
+      background: var(--gold); color: var(--paper);
+      padding: 14px 36px; font-size: 11px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      border: none; border-radius: 2px; text-decoration: none;
+      display: inline-block; transition: background 0.25s, transform 0.2s;
+    }
+    .btn-gold:hover { background: #a07a38; transform: translateY(-2px); }
+
+    .btn-outline {
+      color: var(--ink); padding: 14px 36px;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      border: 1px solid var(--border); border-radius: 2px;
+      text-decoration: none; display: inline-block;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+    .hero-trust {
+      margin-top: 64px; display: flex; gap: 40px;
+      padding-top: 40px; border-top: 1px solid var(--border);
+    }
+    .trust-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px; font-weight: 400; line-height: 1;
+    }
+    .trust-label {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin-top: 6px;
+    }
+
+    .hero-right {
+      position: relative; background: var(--cream);
+      overflow: hidden; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .hero-right::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 60% 50%, rgba(122,140,110,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,149,74,0.1) 0%, transparent 60%);
+    }
+    .herb-visual { position: relative; z-index: 2; text-align: center; padding: 60px; }
+    .herb-circle {
+      width: 320px; height: 320px; border-radius: 50%;
+      border: 1px solid rgba(184,149,74,0.25);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; margin: 0 auto 32px;
+    }
+    .herb-circle::before {
+      content: ''; position: absolute; inset: 12px;
+      border-radius: 50%; border: 1px dashed rgba(184,149,74,0.2);
+    }
+    .herb-emoji { font-size: 80px; animation: herbFloat 4s ease-in-out infinite; }
+    @keyframes herbFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .herb-tag {
+      position: absolute; background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: 100px;
+      font-size: 11px; font-weight: 500; letter-spacing: 1px; white-space: nowrap;
+    }
+    .herb-tag-1 { top: 30px; right: -20px; color: var(--sage); }
+    .herb-tag-2 { bottom: 60px; left: -30px; color: var(--gold); }
+    .herb-tag-3 { top: 50%; right: -50px; color: var(--rust); transform: translateY(-50%); }
+    .herb-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px; font-style: italic; color: var(--muted); letter-spacing: 1px;
+    }
+    .ingredients-strip {
+      position: absolute; bottom: 40px; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 12px;
+      flex-wrap: wrap; padding: 0 32px;
+    }
+    .ingr-pill {
+      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); background: rgba(247,243,236,0.8);
+      border: 1px solid var(--border); padding: 6px 14px; border-radius: 100px;
+    }
+
+    .marquee-band {
+      background: var(--ink); padding: 16px 0; overflow: hidden;
+    }
+    .marquee-inner {
+      display: flex; animation: marqueeScroll 22s linear infinite; width: max-content;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      padding: 0 48px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(247,243,236,0.5); display: flex; align-items: center; gap: 48px;
+      white-space: nowrap; font-weight: 400;
+    }
+    .marquee-item span { color: var(--gold); font-size: 8px; }
+
+    .products { padding: 120px 56px; }
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 64px;
+    }
+    .section-eyebrow {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px; font-weight: 500;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(40px, 4.5vw, 64px); font-weight: 300; line-height: 1.05;
+    }
+    .section-title em { font-style: italic; color: var(--sage); }
+    .section-link {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      border-bottom: 1px solid var(--border); padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+    }
+    .section-link:hover { color: var(--ink); border-color: var(--ink); }
+
+    .products-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    }
+    .product-card {
+      background: var(--cream); padding: 40px 32px;
+      position: relative; overflow: hidden; transition: background 0.3s; cursor: pointer;
+    }
+    .product-card:hover { background: #e8e1d0; }
+    .product-card:first-child { grid-row: 1 / 3; background: var(--ink); color: var(--paper); }
+    .product-card:first-child:hover { background: #2a2520; }
+    .product-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-bottom: 40px;
+    }
+    .product-card:first-child .product-num { color: rgba(247,243,236,0.4); }
+    .product-icon { font-size: 48px; margin-bottom: 24px; display: block; }
+    .product-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 12px;
+    }
+    .product-sub { font-size: 12px; letter-spacing: 1px; color: var(--muted); margin-bottom: 20px; }
+    .product-card:first-child .product-sub { color: rgba(247,243,236,0.5); }
+    .product-desc { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--muted); }
+    .product-card:first-child .product-desc { color: rgba(247,243,236,0.6); }
+    .product-arrow {
+      position: absolute; bottom: 32px; right: 32px;
+      width: 36px; height: 36px; border: 1px solid var(--border);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: background 0.2s, transform 0.2s;
+    }
+    .product-card:hover .product-arrow { background: var(--gold); border-color: var(--gold); color: white; transform: rotate(45deg); }
+    .product-card:first-child .product-arrow { border-color: rgba(247,243,236,0.2); color: var(--paper); }
+
+    .why {
+      padding: 120px 56px; background: var(--cream);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .why-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+    .why-pillars { margin-top: 56px; display: flex; flex-direction: column; }
+    .pillar {
+      padding: 28px 0; border-bottom: 1px solid var(--border);
+      display: grid; grid-template-columns: 48px 1fr; gap: 20px; align-items: start;
+    }
+    .pillar-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 300; color: var(--gold); line-height: 1;
+    }
+    .pillar-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .pillar-text { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--muted); }
+    .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .cert-card { background: var(--paper); border: 1px solid var(--border); padding: 28px 24px; border-radius: 4px; }
+    .cert-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+    .cert-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .cert-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+    .testimonials { padding: 120px 56px; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 64px; }
+    .testi-card { padding: 36px; background: var(--cream); border-radius: 4px; position: relative; }
+    .testi-stars { color: var(--gold); font-size: 12px; letter-spacing: 2px; margin-bottom: 20px; }
+    .testi-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 400; font-style: italic;
+      line-height: 1.7; color: var(--ink); margin-bottom: 24px;
+    }
+    .testi-author { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .testi-card::before {
+      content: '"'; font-family: 'Cormorant Garamond', serif;
+      font-size: 120px; line-height: 1; color: rgba(184,149,74,0.1);
+      position: absolute; top: 10px; left: 20px; font-weight: 300;
+    }
+
+    .instagram-cta {
+      padding: 100px 56px; background: var(--ink);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .instagram-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(184,149,74,0.08) 0%, transparent 70%);
+    }
+    .ig-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; font-weight: 500; }
+    .ig-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 5vw, 72px); font-weight: 300;
+      color: var(--paper); line-height: 1.05; margin-bottom: 16px;
+    }
+    .ig-title em { font-style: italic; color: var(--gold-light); }
+    .ig-handle { font-size: 16px; font-weight: 300; color: rgba(247,243,236,0.5); margin-bottom: 48px; letter-spacing: 2px; }
+    .btn-ig {
+      display: inline-flex; align-items: center; gap: 12px;
+      color: var(--paper); padding: 16px 40px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      border: 1px solid rgba(247,243,236,0.25); border-radius: 2px;
+      text-decoration: none; transition: background 0.25s, border-color 0.25s;
+    }
+    .btn-ig:hover { background: rgba(247,243,236,0.08); border-color: rgba(247,243,236,0.5); }
+    .btn-ig svg { width: 18px; height: 18px; }
+
+    footer {
+      padding: 48px 56px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 500; letter-spacing: 5px; text-transform: uppercase;
+    }
+    .footer-logo em { font-style: italic; color: var(--gold); }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+    .footer-copy { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.9s cubic-bezier(.23,1,.32,1), transform 0.9s cubic-bezier(.23,1,.32,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    @media (max-width: 1024px) {
+      nav { padding: 18px 24px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 60px 24px; }
+      .hero-right { min-height: 60vw; }
+      .products, .why, .testimonials, .instagram-cta { padding: 80px 24px; }
+      .products-grid { grid-template-columns: 1fr 1fr; }
+      .product-card:first-child { grid-row: auto; grid-column: 1 / -1; }
+      .why-inner { grid-template-columns: 1fr; gap: 60px; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
+    }
+    @media (max-width: 640px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .cert-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .hero-trust { gap: 24px; flex-wrap: wrap; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">FA<em>bao</em></a>
+    <div class="nav-links">
+      <a href="#products">Продукты</a>
+      <a href="#why">О бренде</a>
+      <a href="#contact">Контакты</a>
+      <a href="https://instagram.com/fabao_kg" target="_blank" class="nav-ig">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+        @fabao_kg
+      </a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge">ZhangGuang 101 · Кыргызстан</div>
+      <h1 class="hero-h1">Здоровье<br>начинается<br>с <em>корней</em></h1>
+      <p class="hero-desc">Растительные формулы против выпадения волос, проверенные в 65 странах на протяжении 40 лет. Без гормонов. Без побочных эффектов. С видимым результатом.</p>
+      <div class="hero-actions">
+        <a href="#products" class="btn-gold">Смотреть продукты</a>
+        <a href="https://instagram.com/fabao_kg" target="_blank" class="btn-outline">@fabao_kg</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item">
+          <div class="trust-num">40+</div>
+          <div class="trust-label">лет на рынке</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-num">65</div>
+          <div class="trust-label">стран мира</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-num">8</div>
+          <div class="trust-label">международных наград</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="herb-visual">
+        <div class="herb-circle">
+          <span class="herb-emoji">🌿</span>
+          <div class="herb-tag herb-tag-1">Женьшень</div>
+          <div class="herb-tag herb-tag-2">Сафлор</div>
+          <div class="herb-tag herb-tag-3">Горец</div>
+        </div>
+        <div class="herb-label">Традиционная китайская медицина</div>
+      </div>
+      <div class="ingredients-strip">
+        <span class="ingr-pill">Гинзеноиды</span>
+        <span class="ingr-pill">Сапонины</span>
+        <span class="ingr-pill">Астрагал</span>
+        <span class="ingr-pill">Нотогинзенозиды</span>
+        <span class="ingr-pill">Без гормонов</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-band">
+    <div class="marquee-inner">
+      <div class="marquee-item">Клинически протестировано <span>✦</span> Без гормонов <span>✦</span> 40 лет опыта <span>✦</span> 8 наград <span>✦</span> 65 стран <span>✦</span> Рекомендовано трихологами <span>✦</span> FDA · ISO · CGMP <span>✦</span></div>
+      <div class="marquee-item">Клинически протестировано <span>✦</span> Без гормонов <span>✦</span> 40 лет опыта <span>✦</span> 8 наград <span>✦</span> 65 стран <span>✦</span> Рекомендовано трихологами <span>✦</span> FDA · ISO · CGMP <span>✦</span></div>
+    </div>
+  </div>
+
+  <section class="products" id="products">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Линейка продуктов</div>
+        <h2 class="section-title reveal">Формулы для<br><em>вашего ухода</em></h2>
+      </div>
+      <a href="https://instagram.com/fabao_kg" target="_blank" class="section-link reveal">Все продукты →</a>
+    </div>
+    <div class="products-grid">
+      <div class="product-card reveal">
+        <div class="product-num">— 01</div>
+        <span class="product-icon">💧</span>
+        <div class="product-name">Тоник 101B<br>от выпадения</div>
+        <div class="product-sub">Бестселлер · 120 мл</div>
+        <div class="product-desc">Нормализует работу сальных желёз, улучшает кровоснабжение фолликулов и питает корни. Видимый результат через 4–8 недель регулярного применения.</div>
+        <div class="product-arrow">→</div>
+      </div>
+      <div class="product-card reveal reveal-d1">
+        <div class="product-num">— 02</div>
+        <span class="product-icon">🧴</span>
+        <div class="product-name">Шампунь с женьшенем</div>
+        <div class="product-sub">Питание · Объём</div>
+        <div class="product-desc">Деликатное очищение с питанием фолликулов экстрактом корня женьшеня.</div>
+        <div class="product-arrow">→</div>
+      </div>
+      <div class="product-card reveal reveal-d2">
+        <div class="product-num">— 03</div>
+        <span class="product-icon">✨</span>
+        <div class="product-name">Сыворотка для роста</div>
+        <div class="product-sub">Интенсивный уход</div>
+        <div class="product-desc">Концентрированная формула для активации спящих фолликулов и ускорения роста.</div>
+        <div class="product-arrow">→</div>
+      </div>
+      <div class="product-card reveal reveal-d3">
+        <div class="product-num">— 04</div>
+        <span class="product-icon">🎁</span>
+        <div class="product-name">Комплексный набор</div>
+        <div class="product-sub">Лучшая цена</div>
+        <div class="product-desc">Тоник + шампунь + аппликатор. Полный курс на 3 месяца для максимального результата.</div>
+        <div class="product-arrow">→</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why" id="why">
+    <div class="why-inner">
+      <div class="why-left">
+        <div class="section-eyebrow reveal">Почему Fabao</div>
+        <h2 class="section-title reveal">Наука <em>и природа</em><br>в каждой капле</h2>
+        <div class="why-pillars">
+          <div class="pillar reveal">
+            <div class="pillar-num">I</div>
+            <div>
+              <div class="pillar-title">Без гормонов</div>
+              <div class="pillar-text">Формулы работают без вмешательства в гормональный фон. Можно прекратить в любой момент — без синдрома отмены.</div>
+            </div>
+          </div>
+          <div class="pillar reveal reveal-d1">
+            <div class="pillar-num">II</div>
+            <div>
+              <div class="pillar-title">Доказанный результат</div>
+              <div class="pillar-text">80% клиентов приходят по рекомендации сертифицированных трихологов и дерматологов.</div>
+            </div>
+          </div>
+          <div class="pillar reveal reveal-d2">
+            <div class="pillar-num">III</div>
+            <div>
+              <div class="pillar-title">40 лет исследований</div>
+              <div class="pillar-text">Разработано д-ром Чжао Чжангуаном — обладателем 11 международных золотых медалей в области трихологии.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-right">
+        <div class="section-eyebrow reveal">Сертификаты качества</div>
+        <h3 class="section-title reveal" style="font-size:clamp(32px,3vw,48px)">Международные<br><em>стандарты</em></h3>
+        <div class="cert-grid">
+          <div class="cert-card reveal"><span class="cert-icon">🏛️</span><div class="cert-title">FDA Certified</div><div class="cert-text">Одобрено Управлением по санитарному надзору США</div></div>
+          <div class="cert-card reveal reveal-d1"><span class="cert-icon">🔬</span><div class="cert-title">ISO / CGMP</div><div class="cert-text">Международные стандарты производства и качества</div></div>
+          <div class="cert-card reveal reveal-d2"><span class="cert-icon">🏆</span><div class="cert-title">8 наград</div><div class="cert-text">Международные премии за качество и эффективность</div></div>
+          <div class="cert-card reveal reveal-d3"><span class="cert-icon">🌍</span><div class="cert-title">65 стран</div><div class="cert-text">Более 30 млн человек решили проблему выпадения волос</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="section-eyebrow reveal">Отзывы</div>
+    <h2 class="section-title reveal">Реальные<br><em>результаты</em></h2>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">После 3 месяцев использования тоника 101B выпадение снизилось заметно. Врач-трихолог сам посоветовал этот бренд.</div>
+        <div class="testi-author">Айгуль М. · Бишкек</div>
+      </div>
+      <div class="testi-card reveal reveal-d1">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">Использую уже год. Волосы стали плотнее, исчезла жирность кожи головы. Натуральный состав — это главное для меня.</div>
+        <div class="testi-author">Нурлан К. · Ош</div>
+      </div>
+      <div class="testi-card reveal reveal-d2">
+        <div class="testi-stars">★★★★☆</div>
+        <div class="testi-quote">Заказывала набор — доставили быстро. Консультация по WhatsApp очень помогла подобрать правильный курс.</div>
+        <div class="testi-author">Жылдыз Б. · Бишкек</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="instagram-cta" id="contact">
+    <div class="ig-label reveal">Следите за нами</div>
+    <h2 class="ig-title reveal">Живые результаты<br><em>каждый день</em></h2>
+    <div class="ig-handle reveal">@fabao_kg</div>
+    <a href="https://instagram.com/fabao_kg" target="_blank" class="btn-ig reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+      Открыть Instagram
+    </a>
+  </section>
+
+  <footer>
+    <div class="footer-logo">FA<em>bao</em></div>
+    <div class="footer-links">
+      <a href="#products">Продукты</a>
+      <a href="#why">О бренде</a>
+      <a href="https://instagram.com/fabao_kg" target="_blank">Instagram</a>
+    </div>
+    <div class="footer-copy">© 2025 Fabao · Кыргызстан · fabao.hair</div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
