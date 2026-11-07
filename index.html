@@ -3,581 +3,920 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Fabao — Премиальные растительные средства от выпадения волос. ZhangGuang 101 в Кыргызстане. Проверено в 65 странах."/>
-  <title>Fabao — Herbal Hair Care · Kyrgyzstan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <meta name="description" content="Fabao — официальные представители ZhangGuang 101, Фоллицель и Charisma в Кыргызстане. Тоник 101B, пептидный уход и консультации в Бишкеке."/>
+  <title>Fabao · ZhangGuang 101 · Бишкек</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --ink: #1a1714;
-      --paper: #f7f3ec;
-      --cream: #ede7d9;
-      --sage: #7a8c6e;
-      --gold: #b8954a;
-      --gold-light: #d4b06a;
-      --rust: #9c4a2a;
-      --muted: #8a8070;
-      --border: rgba(26,23,20,0.1);
+      --ink: #121a16;
+      --mist: #eef2ee;
+      --fog: #dfe7e1;
+      --leaf: #2f6b52;
+      --leaf-deep: #214a39;
+      --celadon: #8fae9c;
+      --mute: #5f6d64;
+      --line: rgba(18, 26, 22, 0.12);
+      --paper: #f7faf7;
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-
     body {
-      background: var(--paper);
+      font-family: "Sora", sans-serif;
       color: var(--ink);
-      font-family: 'Jost', sans-serif;
+      background:
+        radial-gradient(1200px 700px at 85% -10%, rgba(143, 174, 156, 0.28), transparent 55%),
+        radial-gradient(900px 600px at -10% 30%, rgba(47, 107, 82, 0.08), transparent 50%),
+        linear-gradient(180deg, #f4f7f4 0%, var(--mist) 40%, #e8efe9 100%);
       overflow-x: hidden;
     }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
 
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 1000; opacity: 0.6;
+    .wrap {
+      width: min(1180px, calc(100% - 48px));
+      margin-inline: auto;
     }
 
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 500;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 56px;
-      background: rgba(247,243,236,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+    /* NAV */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: rgba(238, 242, 238, 0.78);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
     }
-    .nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px; font-weight: 500;
-      letter-spacing: 6px; text-transform: uppercase;
-      color: var(--ink); text-decoration: none;
+    .nav.scrolled { border-color: var(--line); background: rgba(238, 242, 238, 0.92); }
+    .brand {
+      font-family: "Fraunces", serif;
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1;
     }
-    .nav-logo em { font-style: italic; color: var(--gold); }
-    .nav-links { display: flex; gap: 36px; align-items: center; }
+    .brand span {
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--leaf);
+      text-transform: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
     .nav-links a {
-      font-size: 11px; font-weight: 500;
-      letter-spacing: 2.5px; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      transition: color 0.25s;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+      transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--ink); }
-    .nav-ig {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
-      color: var(--ink) !important;
-      border: 1px solid var(--border);
-      padding: 8px 18px; border-radius: 100px;
-      transition: background 0.25s, border-color 0.25s !important;
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--ink);
+      color: var(--paper) !important;
+      border-radius: 2px;
     }
-    .nav-ig:hover { background: var(--ink); color: var(--paper) !important; border-color: var(--ink); }
-    .nav-ig svg { width: 14px; height: 14px; }
+    .nav-cta:hover { background: var(--leaf-deep); color: var(--paper) !important; }
 
+    /* HERO */
     .hero {
+      position: relative;
       min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+    }
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 28%;
+      transform: scale(1.08);
+      animation: heroDrift 18s ease-in-out infinite alternate;
+      filter: saturate(0.92) contrast(1.05);
+    }
+    @keyframes heroDrift {
+      from { transform: scale(1.08) translate3d(0, 0, 0); }
+      to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); }
+    }
+    .hero-shade {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(18, 26, 22, 0.18) 0%, rgba(18, 26, 22, 0.28) 35%, rgba(18, 26, 22, 0.78) 100%),
+        linear-gradient(90deg, rgba(18, 26, 22, 0.45) 0%, transparent 55%);
+    }
+    .hero-copy {
+      width: min(720px, calc(100% - 48px));
+      margin: 0 auto 0 28px;
+      padding: 140px 0 72px;
+      color: var(--paper);
+    }
+    .hero-brand {
+      font-family: "Fraunces", serif;
+      font-size: clamp(56px, 11vw, 120px);
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      line-height: 0.92;
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: riseIn 1s 0.15s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .hero-brand em {
+      display: block;
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: none;
+      color: #c5d9cb;
+      font-size: 0.42em;
+      margin-top: 10px;
+    }
+    .hero-line {
+      font-family: "Fraunces", serif;
+      font-size: clamp(28px, 4.2vw, 44px);
+      font-weight: 300;
+      line-height: 1.15;
+      max-width: 14ch;
+      margin-bottom: 18px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: riseIn 1s 0.35s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .hero-sub {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(247, 250, 247, 0.78);
+      max-width: 38ch;
+      margin-bottom: 34px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: riseIn 1s 0.5s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: riseIn 1s 0.65s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes riseIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      border: 1px solid transparent;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-solid {
+      background: var(--leaf);
+      color: var(--paper);
+    }
+    .btn-solid:hover { background: #387a5d; }
+    .btn-ghost {
+      border-color: rgba(247, 250, 247, 0.35);
+      color: var(--paper);
+    }
+    .btn-ghost:hover { border-color: rgba(247, 250, 247, 0.8); }
+    .btn-dark {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn-dark:hover { background: var(--leaf-deep); }
+    .btn-line {
+      border-color: var(--line);
+      color: var(--ink);
+      background: transparent;
+    }
+    .btn-line:hover { border-color: var(--ink); }
+
+    /* BRANDS */
+    .brands {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(247, 250, 247, 0.55);
+    }
+    .brands-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px 32px;
+    }
+    .brands-label {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .brand-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 28px;
+      list-style: none;
+    }
+    .brand-list li {
+      font-family: "Fraunces", serif;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .brand-list li small {
+      display: block;
+      font-family: "Sora", sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-top: 4px;
+    }
+
+    /* SECTIONS */
+    section { padding: 96px 0; }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--leaf);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: "Fraunces", serif;
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      max-width: 14ch;
+    }
+    .section-title em { font-style: italic; color: var(--leaf); }
+    .section-lead {
+      margin-top: 18px;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--mute);
+      max-width: 46ch;
+    }
+
+    /* PRODUCTS */
+    .products-head {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 48px;
+    }
+    .product-stage {
+      display: grid;
+      gap: 28px;
+    }
+    .product-feature {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 0;
+      min-height: 520px;
+      background: var(--ink);
+      color: var(--paper);
+      overflow: hidden;
+    }
+    .product-feature-media {
+      position: relative;
+      min-height: 320px;
+      overflow: hidden;
+    }
+    .product-feature-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+    }
+    .product-feature:hover .product-feature-media img { transform: scale(1.05); }
+    .product-feature-copy {
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .product-kicker {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--celadon);
+      margin-bottom: 18px;
+    }
+    .product-name {
+      font-family: "Fraunces", serif;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 300;
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+    .product-text {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(247, 250, 247, 0.72);
+      margin-bottom: 28px;
+      max-width: 38ch;
+    }
+    .product-points {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .product-points li {
+      display: grid;
+      grid-template-columns: 14px 1fr;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(247, 250, 247, 0.82);
+      line-height: 1.5;
+    }
+    .product-points li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: var(--celadon);
+    }
+
+    .product-rail {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .product-item {
+      display: grid;
+      grid-template-rows: 240px auto;
+      background: rgba(247, 250, 247, 0.72);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .product-item:hover {
+      border-color: rgba(47, 107, 82, 0.35);
+      transform: translateY(-4px);
+    }
+    .product-item-media {
+      overflow: hidden;
+      background: var(--fog);
+      position: relative;
+    }
+    .product-item-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 45%, rgba(18, 26, 22, 0.18) 100%);
+      pointer-events: none;
+    }
+    .product-item-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(.22,1,.36,1);
+    }
+    .product-item:hover .product-item-media img { transform: scale(1.06); }
+    .product-item-copy { padding: 22px 20px 26px; }
+    .product-item-copy h3 {
+      font-family: "Fraunces", serif;
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      line-height: 1.15;
+    }
+    .product-item-copy p {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--mute);
+    }
+    .product-tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--leaf);
+    }
+
+    /* METHOD */
+    .method {
+      background:
+        linear-gradient(180deg, rgba(223, 231, 225, 0.65), rgba(238, 242, 238, 0.2));
+      border-block: 1px solid var(--line);
+    }
+    .method-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 56px;
+      align-items: start;
+    }
+    .method-visual {
+      position: sticky;
+      top: 100px;
+      overflow: hidden;
+      min-height: 520px;
+      background: var(--fog);
+    }
+    .method-visual img {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      object-fit: cover;
+    }
+    .steps {
+      list-style: none;
+      display: grid;
+      gap: 0;
+      margin-top: 36px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 18px;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+    }
+    .step:last-child { border-bottom: 1px solid var(--line); }
+    .step-num {
+      font-family: "Fraunces", serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--leaf);
+      line-height: 1;
+    }
+    .step h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .step p {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--mute);
+    }
+
+    /* VISIT */
+    .visit-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      padding-top: 80px;
+      gap: 48px;
+      align-items: center;
+    }
+    .visit-panel {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 48px 40px;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       position: relative;
       overflow: hidden;
     }
-    .hero-left {
-      padding: 80px 56px;
-      display: flex; flex-direction: column; justify-content: center;
-      position: relative; z-index: 2;
+    .visit-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -30% auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 174, 156, 0.28), transparent 70%);
+      pointer-events: none;
     }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--gold); font-weight: 500;
-      border: 1px solid rgba(184,149,74,0.3);
-      background: rgba(184,149,74,0.06);
-      padding: 8px 16px; border-radius: 100px;
-      margin-bottom: 36px; width: fit-content;
+    .visit-panel h2 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(34px, 4vw, 48px);
+      font-weight: 300;
+      line-height: 1.1;
+      margin: 12px 0 18px;
     }
-    .hero-badge::before { content: '✦'; font-size: 8px; }
+    .visit-panel p {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(247, 250, 247, 0.7);
+      max-width: 34ch;
+    }
+    .visit-facts {
+      display: grid;
+      gap: 18px;
+      margin-top: 36px;
+    }
+    .visit-fact strong {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--celadon);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .visit-fact span {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.55;
+    }
+    .visit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+    .visit-photo {
+      overflow: hidden;
+      min-height: 420px;
+      background: var(--fog);
+    }
+    .visit-photo img {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      object-fit: cover;
+      object-position: center top;
+    }
 
-    .hero-h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(58px, 6.5vw, 96px);
-      font-weight: 300; line-height: 1.02;
-      letter-spacing: -1px; margin-bottom: 28px;
+    /* CTA */
+    .cta {
+      padding-bottom: 120px;
     }
-    .hero-h1 em { font-style: italic; color: var(--sage); }
-
-    .hero-desc {
-      font-size: 15px; font-weight: 300;
-      line-height: 1.85; color: var(--muted);
-      max-width: 420px; margin-bottom: 48px;
-    }
-    .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-
-    .btn-gold {
-      background: var(--gold); color: var(--paper);
-      padding: 14px 36px; font-size: 11px; font-weight: 600;
-      letter-spacing: 2.5px; text-transform: uppercase;
-      border: none; border-radius: 2px; text-decoration: none;
-      display: inline-block; transition: background 0.25s, transform 0.2s;
-    }
-    .btn-gold:hover { background: #a07a38; transform: translateY(-2px); }
-
-    .btn-outline {
-      color: var(--ink); padding: 14px 36px;
-      font-size: 11px; font-weight: 500;
-      letter-spacing: 2.5px; text-transform: uppercase;
-      border: 1px solid var(--border); border-radius: 2px;
-      text-decoration: none; display: inline-block;
-      transition: border-color 0.25s, transform 0.2s;
-    }
-    .btn-outline:hover { border-color: var(--ink); transform: translateY(-2px); }
-
-    .hero-trust {
-      margin-top: 64px; display: flex; gap: 40px;
-      padding-top: 40px; border-top: 1px solid var(--border);
-    }
-    .trust-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 38px; font-weight: 400; line-height: 1;
-    }
-    .trust-label {
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted); margin-top: 6px;
-    }
-
-    .hero-right {
-      position: relative; background: var(--cream);
-      overflow: hidden; display: flex;
-      align-items: center; justify-content: center;
-    }
-    .hero-right::before {
-      content: ''; position: absolute; inset: 0;
+    .cta-band {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+      align-items: end;
+      padding: 56px;
       background:
-        radial-gradient(ellipse 60% 70% at 60% 50%, rgba(122,140,110,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,149,74,0.1) 0%, transparent 60%);
+        linear-gradient(135deg, rgba(47, 107, 82, 0.12), transparent 50%),
+        rgba(247, 250, 247, 0.8);
+      border: 1px solid var(--line);
     }
-    .herb-visual { position: relative; z-index: 2; text-align: center; padding: 60px; }
-    .herb-circle {
-      width: 320px; height: 320px; border-radius: 50%;
-      border: 1px solid rgba(184,149,74,0.25);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; margin: 0 auto 32px;
+    .cta-band h2 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(34px, 4.5vw, 52px);
+      font-weight: 300;
+      line-height: 1.08;
+      max-width: 12ch;
+      margin-bottom: 14px;
     }
-    .herb-circle::before {
-      content: ''; position: absolute; inset: 12px;
-      border-radius: 50%; border: 1px dashed rgba(184,149,74,0.2);
+    .cta-band p {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--mute);
+      max-width: 40ch;
     }
-    .herb-emoji { font-size: 80px; animation: herbFloat 4s ease-in-out infinite; }
-    @keyframes herbFloat {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
     }
-    .herb-tag {
-      position: absolute; background: var(--paper);
-      border: 1px solid var(--border);
-      padding: 8px 16px; border-radius: 100px;
-      font-size: 11px; font-weight: 500; letter-spacing: 1px; white-space: nowrap;
-    }
-    .herb-tag-1 { top: 30px; right: -20px; color: var(--sage); }
-    .herb-tag-2 { bottom: 60px; left: -30px; color: var(--gold); }
-    .herb-tag-3 { top: 50%; right: -50px; color: var(--rust); transform: translateY(-50%); }
-    .herb-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px; font-style: italic; color: var(--muted); letter-spacing: 1px;
-    }
-    .ingredients-strip {
-      position: absolute; bottom: 40px; left: 0; right: 0;
-      display: flex; justify-content: center; gap: 12px;
-      flex-wrap: wrap; padding: 0 32px;
-    }
-    .ingr-pill {
-      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--muted); background: rgba(247,243,236,0.8);
-      border: 1px solid var(--border); padding: 6px 14px; border-radius: 100px;
-    }
-
-    .marquee-band {
-      background: var(--ink); padding: 16px 0; overflow: hidden;
-    }
-    .marquee-inner {
-      display: flex; animation: marqueeScroll 22s linear infinite; width: max-content;
-    }
-    @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-    .marquee-item {
-      padding: 0 48px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-      color: rgba(247,243,236,0.5); display: flex; align-items: center; gap: 48px;
-      white-space: nowrap; font-weight: 400;
-    }
-    .marquee-item span { color: var(--gold); font-size: 8px; }
-
-    .products { padding: 120px 56px; }
-    .section-header {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 64px;
-    }
-    .section-eyebrow {
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 12px; font-weight: 500;
-    }
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(40px, 4.5vw, 64px); font-weight: 300; line-height: 1.05;
-    }
-    .section-title em { font-style: italic; color: var(--sage); }
-    .section-link {
-      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      border-bottom: 1px solid var(--border); padding-bottom: 2px;
-      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
-    }
-    .section-link:hover { color: var(--ink); border-color: var(--ink); }
-
-    .products-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
-    }
-    .product-card {
-      background: var(--cream); padding: 40px 32px;
-      position: relative; overflow: hidden; transition: background 0.3s; cursor: pointer;
-    }
-    .product-card:hover { background: #e8e1d0; }
-    .product-card:first-child { grid-row: 1 / 3; background: var(--ink); color: var(--paper); }
-    .product-card:first-child:hover { background: #2a2520; }
-    .product-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-bottom: 40px;
-    }
-    .product-card:first-child .product-num { color: rgba(247,243,236,0.4); }
-    .product-icon { font-size: 48px; margin-bottom: 24px; display: block; }
-    .product-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 12px;
-    }
-    .product-sub { font-size: 12px; letter-spacing: 1px; color: var(--muted); margin-bottom: 20px; }
-    .product-card:first-child .product-sub { color: rgba(247,243,236,0.5); }
-    .product-desc { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--muted); }
-    .product-card:first-child .product-desc { color: rgba(247,243,236,0.6); }
-    .product-arrow {
-      position: absolute; bottom: 32px; right: 32px;
-      width: 36px; height: 36px; border: 1px solid var(--border);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; transition: background 0.2s, transform 0.2s;
-    }
-    .product-card:hover .product-arrow { background: var(--gold); border-color: var(--gold); color: white; transform: rotate(45deg); }
-    .product-card:first-child .product-arrow { border-color: rgba(247,243,236,0.2); color: var(--paper); }
-
-    .why {
-      padding: 120px 56px; background: var(--cream);
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    }
-    .why-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
-    .why-pillars { margin-top: 56px; display: flex; flex-direction: column; }
-    .pillar {
-      padding: 28px 0; border-bottom: 1px solid var(--border);
-      display: grid; grid-template-columns: 48px 1fr; gap: 20px; align-items: start;
-    }
-    .pillar-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 32px; font-weight: 300; color: var(--gold); line-height: 1;
-    }
-    .pillar-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
-    .pillar-text { font-size: 13px; font-weight: 300; line-height: 1.8; color: var(--muted); }
-    .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
-    .cert-card { background: var(--paper); border: 1px solid var(--border); padding: 28px 24px; border-radius: 4px; }
-    .cert-icon { font-size: 28px; margin-bottom: 12px; display: block; }
-    .cert-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-    .cert-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
-
-    .testimonials { padding: 120px 56px; }
-    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 64px; }
-    .testi-card { padding: 36px; background: var(--cream); border-radius: 4px; position: relative; }
-    .testi-stars { color: var(--gold); font-size: 12px; letter-spacing: 2px; margin-bottom: 20px; }
-    .testi-quote {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px; font-weight: 400; font-style: italic;
-      line-height: 1.7; color: var(--ink); margin-bottom: 24px;
-    }
-    .testi-author { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
-    .testi-card::before {
-      content: '"'; font-family: 'Cormorant Garamond', serif;
-      font-size: 120px; line-height: 1; color: rgba(184,149,74,0.1);
-      position: absolute; top: 10px; left: 20px; font-weight: 300;
-    }
-
-    .instagram-cta {
-      padding: 100px 56px; background: var(--ink);
-      text-align: center; position: relative; overflow: hidden;
-    }
-    .instagram-cta::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(184,149,74,0.08) 0%, transparent 70%);
-    }
-    .ig-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; font-weight: 500; }
-    .ig-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(44px, 5vw, 72px); font-weight: 300;
-      color: var(--paper); line-height: 1.05; margin-bottom: 16px;
-    }
-    .ig-title em { font-style: italic; color: var(--gold-light); }
-    .ig-handle { font-size: 16px; font-weight: 300; color: rgba(247,243,236,0.5); margin-bottom: 48px; letter-spacing: 2px; }
-    .btn-ig {
-      display: inline-flex; align-items: center; gap: 12px;
-      color: var(--paper); padding: 16px 40px;
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 2.5px; text-transform: uppercase;
-      border: 1px solid rgba(247,243,236,0.25); border-radius: 2px;
-      text-decoration: none; transition: background 0.25s, border-color 0.25s;
-    }
-    .btn-ig:hover { background: rgba(247,243,236,0.08); border-color: rgba(247,243,236,0.5); }
-    .btn-ig svg { width: 18px; height: 18px; }
 
     footer {
-      padding: 48px 56px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--line);
+      padding: 28px 0 40px;
     }
-    .footer-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px; font-weight: 500; letter-spacing: 5px; text-transform: uppercase;
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px 28px;
+      align-items: center;
     }
-    .footer-logo em { font-style: italic; color: var(--gold); }
-    .footer-links { display: flex; gap: 28px; }
+    .footer-meta {
+      font-size: 12px;
+      color: var(--mute);
+      letter-spacing: 0.04em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 22px;
+    }
     .footer-links a {
-      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted); text-decoration: none; transition: color 0.2s;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
     }
     .footer-links a:hover { color: var(--ink); }
-    .footer-copy { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
 
+    /* MOTION / REVEAL */
     .reveal {
-      opacity: 0; transform: translateY(30px);
-      transition: opacity 0.9s cubic-bezier(.23,1,.32,1), transform 0.9s cubic-bezier(.23,1,.32,1);
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.9s cubic-bezier(.22,1,.36,1), transform 0.9s cubic-bezier(.22,1,.36,1);
     }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-d1 { transition-delay: 0.1s; }
-    .reveal-d2 { transition-delay: 0.2s; }
-    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-d1 { transition-delay: 0.12s; }
+    .reveal-d2 { transition-delay: 0.24s; }
+    .reveal-d3 { transition-delay: 0.36s; }
 
-    @media (max-width: 1024px) {
-      nav { padding: 18px 24px; }
-      .hero { grid-template-columns: 1fr; }
-      .hero-left { padding: 60px 24px; }
-      .hero-right { min-height: 60vw; }
-      .products, .why, .testimonials, .instagram-cta { padding: 80px 24px; }
-      .products-grid { grid-template-columns: 1fr 1fr; }
-      .product-card:first-child { grid-row: auto; grid-column: 1 / -1; }
-      .why-inner { grid-template-columns: 1fr; gap: 60px; }
-      .testimonials-grid { grid-template-columns: 1fr; }
-      footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
+    @media (max-width: 960px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero-copy { margin-left: 20px; width: calc(100% - 40px); padding-bottom: 56px; }
+      .products-head,
+      .product-feature,
+      .product-rail,
+      .method-grid,
+      .visit-grid,
+      .cta-band {
+        grid-template-columns: 1fr;
+      }
+      .product-feature { min-height: 0; }
+      .product-feature-copy { padding: 32px 24px 40px; }
+      .method-visual { position: static; min-height: 320px; }
+      .method-visual img { min-height: 320px; }
+      .visit-panel { padding: 36px 28px; min-height: 0; }
+      .visit-photo, .visit-photo img { min-height: 300px; }
+      .cta-band { padding: 36px 24px; }
+      section { padding: 72px 0; }
+      .wrap { width: min(1180px, calc(100% - 40px)); }
     }
+
     @media (max-width: 640px) {
-      .products-grid { grid-template-columns: 1fr; }
-      .cert-grid { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
-      .hero-trust { gap: 24px; flex-wrap: wrap; }
-      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .product-rail { grid-template-columns: 1fr; }
+      .brand-list { gap: 16px 24px; }
+      .hero-brand { letter-spacing: 0.1em; }
+      .nav { padding: 14px 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-media img { animation: none; transform: none; }
+      .reveal, .hero-brand, .hero-line, .hero-sub, .hero-actions {
+        opacity: 1;
+        transform: none;
+        animation: none;
+        transition: none;
+      }
     }
   </style>
 </head>
 <body>
-
-  <nav>
-    <a href="#" class="nav-logo">FA<em>bao</em></a>
-    <div class="nav-links">
+  <header class="nav" id="nav">
+    <a class="brand" href="#">FA<span>bao</span></a>
+    <nav class="nav-links" aria-label="Основная навигация">
       <a href="#products">Продукты</a>
-      <a href="#why">О бренде</a>
-      <a href="#contact">Контакты</a>
-      <a href="https://instagram.com/fabao_kg" target="_blank" class="nav-ig">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
-        @fabao_kg
-      </a>
-    </div>
-  </nav>
+      <a href="#method">Применение</a>
+      <a href="#visit">Салон</a>
+      <a class="nav-cta" href="https://wa.me/996505017013" target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+  </header>
 
-  <section class="hero">
-    <div class="hero-left">
-      <div class="hero-badge">ZhangGuang 101 · Кыргызстан</div>
-      <h1 class="hero-h1">Здоровье<br>начинается<br>с <em>корней</em></h1>
-      <p class="hero-desc">Растительные формулы против выпадения волос, проверенные в 65 странах на протяжении 40 лет. Без гормонов. Без побочных эффектов. С видимым результатом.</p>
-      <div class="hero-actions">
-        <a href="#products" class="btn-gold">Смотреть продукты</a>
-        <a href="https://instagram.com/fabao_kg" target="_blank" class="btn-outline">@fabao_kg</a>
+  <main>
+    <section class="hero" aria-label="Главный экран">
+      <div class="hero-media">
+        <img src="assets/hero.jpg" alt="Уход за волосами в атмосфере салона Fabao" width="1800" height="1350"/>
       </div>
-      <div class="hero-trust">
-        <div class="trust-item">
-          <div class="trust-num">40+</div>
-          <div class="trust-label">лет на рынке</div>
-        </div>
-        <div class="trust-item">
-          <div class="trust-num">65</div>
-          <div class="trust-label">стран мира</div>
-        </div>
-        <div class="trust-item">
-          <div class="trust-num">8</div>
-          <div class="trust-label">международных наград</div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <h1 class="hero-brand">FABAO<em>Бишкек · @fabao_kg</em></h1>
+        <p class="hero-line">Густые волосы начинаются с корней</p>
+        <p class="hero-sub">Официальные представители ZhangGuang 101, Фоллицель и Charisma в Кыргызстане. Растительные и пептидные формулы против выпадения — с консультацией в Direct.</p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="https://instagram.com/fabao_kg" target="_blank" rel="noopener">Написать в Direct</a>
+          <a class="btn btn-ghost" href="#products">Смотреть линейку</a>
         </div>
       </div>
+    </section>
+
+    <div class="brands">
+      <div class="wrap brands-row">
+        <p class="brands-label">Представляем в КР</p>
+        <ul class="brand-list">
+          <li>ZhangGuang 101<small>50 лет восточной формулы</small></li>
+          <li>Фоллицель<small>пептиды · восстановление</small></li>
+          <li>Charisma<small>DekoHair · салонный уход</small></li>
+        </ul>
+      </div>
     </div>
 
-    <div class="hero-right">
-      <div class="herb-visual">
-        <div class="herb-circle">
-          <span class="herb-emoji">🌿</span>
-          <div class="herb-tag herb-tag-1">Женьшень</div>
-          <div class="herb-tag herb-tag-2">Сафлор</div>
-          <div class="herb-tag herb-tag-3">Горец</div>
-        </div>
-        <div class="herb-label">Традиционная китайская медицина</div>
-      </div>
-      <div class="ingredients-strip">
-        <span class="ingr-pill">Гинзеноиды</span>
-        <span class="ingr-pill">Сапонины</span>
-        <span class="ingr-pill">Астрагал</span>
-        <span class="ingr-pill">Нотогинзенозиды</span>
-        <span class="ingr-pill">Без гормонов</span>
-      </div>
-    </div>
-  </section>
-
-  <div class="marquee-band">
-    <div class="marquee-inner">
-      <div class="marquee-item">Клинически протестировано <span>✦</span> Без гормонов <span>✦</span> 40 лет опыта <span>✦</span> 8 наград <span>✦</span> 65 стран <span>✦</span> Рекомендовано трихологами <span>✦</span> FDA · ISO · CGMP <span>✦</span></div>
-      <div class="marquee-item">Клинически протестировано <span>✦</span> Без гормонов <span>✦</span> 40 лет опыта <span>✦</span> 8 наград <span>✦</span> 65 стран <span>✦</span> Рекомендовано трихологами <span>✦</span> FDA · ISO · CGMP <span>✦</span></div>
-    </div>
-  </div>
-
-  <section class="products" id="products">
-    <div class="section-header">
-      <div>
-        <div class="section-eyebrow">Линейка продуктов</div>
-        <h2 class="section-title reveal">Формулы для<br><em>вашего ухода</em></h2>
-      </div>
-      <a href="https://instagram.com/fabao_kg" target="_blank" class="section-link reveal">Все продукты →</a>
-    </div>
-    <div class="products-grid">
-      <div class="product-card reveal">
-        <div class="product-num">— 01</div>
-        <span class="product-icon">💧</span>
-        <div class="product-name">Тоник 101B<br>от выпадения</div>
-        <div class="product-sub">Бестселлер · 120 мл</div>
-        <div class="product-desc">Нормализует работу сальных желёз, улучшает кровоснабжение фолликулов и питает корни. Видимый результат через 4–8 недель регулярного применения.</div>
-        <div class="product-arrow">→</div>
-      </div>
-      <div class="product-card reveal reveal-d1">
-        <div class="product-num">— 02</div>
-        <span class="product-icon">🧴</span>
-        <div class="product-name">Шампунь с женьшенем</div>
-        <div class="product-sub">Питание · Объём</div>
-        <div class="product-desc">Деликатное очищение с питанием фолликулов экстрактом корня женьшеня.</div>
-        <div class="product-arrow">→</div>
-      </div>
-      <div class="product-card reveal reveal-d2">
-        <div class="product-num">— 03</div>
-        <span class="product-icon">✨</span>
-        <div class="product-name">Сыворотка для роста</div>
-        <div class="product-sub">Интенсивный уход</div>
-        <div class="product-desc">Концентрированная формула для активации спящих фолликулов и ускорения роста.</div>
-        <div class="product-arrow">→</div>
-      </div>
-      <div class="product-card reveal reveal-d3">
-        <div class="product-num">— 04</div>
-        <span class="product-icon">🎁</span>
-        <div class="product-name">Комплексный набор</div>
-        <div class="product-sub">Лучшая цена</div>
-        <div class="product-desc">Тоник + шампунь + аппликатор. Полный курс на 3 месяца для максимального результата.</div>
-        <div class="product-arrow">→</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="why" id="why">
-    <div class="why-inner">
-      <div class="why-left">
-        <div class="section-eyebrow reveal">Почему Fabao</div>
-        <h2 class="section-title reveal">Наука <em>и природа</em><br>в каждой капле</h2>
-        <div class="why-pillars">
-          <div class="pillar reveal">
-            <div class="pillar-num">I</div>
-            <div>
-              <div class="pillar-title">Без гормонов</div>
-              <div class="pillar-text">Формулы работают без вмешательства в гормональный фон. Можно прекратить в любой момент — без синдрома отмены.</div>
-            </div>
+    <section class="products" id="products">
+      <div class="wrap">
+        <div class="products-head">
+          <div>
+            <p class="eyebrow reveal">Как в ленте @fabao_kg</p>
+            <h2 class="section-title reveal">Формулы, о которых мы пишем <em>каждый день</em></h2>
           </div>
-          <div class="pillar reveal reveal-d1">
-            <div class="pillar-num">II</div>
-            <div>
-              <div class="pillar-title">Доказанный результат</div>
-              <div class="pillar-text">80% клиентов приходят по рекомендации сертифицированных трихологов и дерматологов.</div>
+          <p class="section-lead reveal reveal-d1">От обновлённого тоника 101B к 50-летию ZhangGuang до пептидного коктейля Фоллицель — подбираем курс под ваш тип выпадения и состояние кожи головы.</p>
+        </div>
+
+        <div class="product-stage">
+          <article class="product-feature reveal">
+            <div class="product-feature-media">
+              <img src="assets/tonic.jpg" alt="Растительные экстракты ZhangGuang 101B" width="1200" height="800"/>
             </div>
-          </div>
-          <div class="pillar reveal reveal-d2">
-            <div class="pillar-num">III</div>
-            <div>
-              <div class="pillar-title">40 лет исследований</div>
-              <div class="pillar-text">Разработано д-ром Чжао Чжангуаном — обладателем 11 международных золотых медалей в области трихологии.</div>
+            <div class="product-feature-copy">
+              <p class="product-kicker">Бестселлер · 120 мл · ребрендинг к 50-летию</p>
+              <h3 class="product-name">Тоник 101B от выпадения</h3>
+              <p class="product-text">Легенда ZhangGuang с обновлённой формулой: женьшень, софора японская и дудник плюс салициловая кислота для мягкого очищения и глубокого проникновения.</p>
+              <ul class="product-points">
+                <li>Останавливает выпадение и укрепляет корни</li>
+                <li>Контролирует жирность и себорею</li>
+                <li>Пробуждает неактивные фолликулы</li>
+              </ul>
+              <a class="btn btn-solid" href="https://wa.me/996505017013?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D1%82%D0%BE%D0%BD%D0%B8%D0%BA%20101B" target="_blank" rel="noopener">Узнать наличие</a>
             </div>
+          </article>
+
+          <div class="product-rail">
+            <article class="product-item reveal">
+              <div class="product-item-media">
+                <img src="assets/shampoo.jpg" alt="Растительная основа женьшеневого шампуня" width="1000" height="1000"/>
+              </div>
+              <div class="product-item-copy">
+                <span class="product-tag">ZhangGuang</span>
+                <h3>Женьшеневый шампунь</h3>
+                <p>Готовит кожу головы и усиливает действие тоника. Деликатное очищение с питанием фолликулов.</p>
+              </div>
+            </article>
+            <article class="product-item reveal reveal-d1">
+              <div class="product-item-media">
+                <img src="assets/mask.jpg" alt="Ботанический уход маски Фоллицель" width="1000" height="1000"/>
+              </div>
+              <div class="product-item-copy">
+                <span class="product-tag">Фоллицель</span>
+                <h3>Регенерирующая маска</h3>
+                <p>Пептиды, гидролизованный кератин и клевер — блеск и плотность без утяжеления. Можно вместо кондиционера.</p>
+              </div>
+            </article>
+            <article class="product-item reveal reveal-d2">
+              <div class="product-item-media">
+                <img src="assets/serum.jpg" alt="Пептидный коктейль Фоллицель в каплях" width="1000" height="1500"/>
+              </div>
+              <div class="product-item-copy">
+                <span class="product-tag">Фоллицель</span>
+                <h3>Пептидный коктейль</h3>
+                <p>Procapil, Capixyl, Follicusan и Auxin — четыре комплекса против алопеции. Без синдрома отмены.</p>
+              </div>
+            </article>
           </div>
         </div>
       </div>
-      <div class="why-right">
-        <div class="section-eyebrow reveal">Сертификаты качества</div>
-        <h3 class="section-title reveal" style="font-size:clamp(32px,3vw,48px)">Международные<br><em>стандарты</em></h3>
-        <div class="cert-grid">
-          <div class="cert-card reveal"><span class="cert-icon">🏛️</span><div class="cert-title">FDA Certified</div><div class="cert-text">Одобрено Управлением по санитарному надзору США</div></div>
-          <div class="cert-card reveal reveal-d1"><span class="cert-icon">🔬</span><div class="cert-title">ISO / CGMP</div><div class="cert-text">Международные стандарты производства и качества</div></div>
-          <div class="cert-card reveal reveal-d2"><span class="cert-icon">🏆</span><div class="cert-title">8 наград</div><div class="cert-text">Международные премии за качество и эффективность</div></div>
-          <div class="cert-card reveal reveal-d3"><span class="cert-icon">🌍</span><div class="cert-title">65 стран</div><div class="cert-text">Более 30 млн человек решили проблему выпадения волос</div></div>
+    </section>
+
+    <section class="method" id="method">
+      <div class="wrap method-grid">
+        <div class="method-visual reveal">
+          <img src="assets/botanical.jpg" alt="Растительные экстракты для ухода за кожей головы" width="1400" height="933"/>
+        </div>
+        <div>
+          <p class="eyebrow reveal">Как наносить 101B</p>
+          <h2 class="section-title reveal">Ритуал из наших сторис — <em>без смывания</em></h2>
+          <p class="section-lead reveal reveal-d1">Для максимального эффекта используйте тоник в паре с женьшеневым шампунем. Не смывайте средство минимум 4 часа.</p>
+          <ol class="steps">
+            <li class="step reveal">
+              <div class="step-num">01</div>
+              <div>
+                <h3>Подготовка</h3>
+                <p>Лёгкий массаж кожи головы 3–5 минут, чтобы усилить кровообращение.</p>
+              </div>
+            </li>
+            <li class="step reveal reveal-d1">
+              <div class="step-num">02</div>
+              <div>
+                <h3>Нанесение</h3>
+                <p>5–10 мл тоника на сухую кожу. Вбивайте подушечками пальцев, не растирайте.</p>
+              </div>
+            </li>
+            <li class="step reveal reveal-d2">
+              <div class="step-num">03</div>
+              <div>
+                <h3>Удержание</h3>
+                <p>Оставьте на коже минимум 4 часа. Курс — от 2–3 месяцев при регулярном применении.</p>
+              </div>
+            </li>
+          </ol>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="testimonials">
-    <div class="section-eyebrow reveal">Отзывы</div>
-    <h2 class="section-title reveal">Реальные<br><em>результаты</em></h2>
-    <div class="testimonials-grid">
-      <div class="testi-card reveal">
-        <div class="testi-stars">★★★★★</div>
-        <div class="testi-quote">После 3 месяцев использования тоника 101B выпадение снизилось заметно. Врач-трихолог сам посоветовал этот бренд.</div>
-        <div class="testi-author">Айгуль М. · Бишкек</div>
+    <section class="visit" id="visit">
+      <div class="wrap visit-grid">
+        <div class="visit-panel reveal">
+          <div>
+            <p class="eyebrow" style="color: var(--celadon)">Салон в Бишкеке</p>
+            <h2>Приходите за консультацией и оригинальной продукцией</h2>
+            <p>Подберём курс под ваш запрос: выпадение, жирность, восстановление после окрашивания или послеродовое выпадение.</p>
+            <div class="visit-facts">
+              <div class="visit-fact">
+                <strong>Адрес</strong>
+                <span>ул. Жусупа Абдрахманова, 323<br/>2 этаж · Бишкек</span>
+              </div>
+              <div class="visit-fact">
+                <strong>Часы</strong>
+                <span>Пн–Пт 10:00–20:00 · Сб 10:00–18:00<br/>По предварительному звонку</span>
+              </div>
+              <div class="visit-fact">
+                <strong>Телефон</strong>
+                <span><a href="tel:+996505017013">+996 505 017 013</a></span>
+              </div>
+            </div>
+          </div>
+          <div class="visit-actions">
+            <a class="btn btn-solid" href="https://wa.me/996505017013" target="_blank" rel="noopener">WhatsApp</a>
+            <a class="btn btn-ghost" href="https://2gis.kg/bishkek/firm/70000001100245945" target="_blank" rel="noopener">Открыть в 2ГИС</a>
+          </div>
+        </div>
+        <div class="visit-photo reveal reveal-d1">
+          <img src="assets/hair.jpg" alt="Салонный уход Fabao в Бишкеке" width="1200" height="1600"/>
+        </div>
       </div>
-      <div class="testi-card reveal reveal-d1">
-        <div class="testi-stars">★★★★★</div>
-        <div class="testi-quote">Использую уже год. Волосы стали плотнее, исчезла жирность кожи головы. Натуральный состав — это главное для меня.</div>
-        <div class="testi-author">Нурлан К. · Ош</div>
-      </div>
-      <div class="testi-card reveal reveal-d2">
-        <div class="testi-stars">★★★★☆</div>
-        <div class="testi-quote">Заказывала набор — доставили быстро. Консультация по WhatsApp очень помогла подобрать правильный курс.</div>
-        <div class="testi-author">Жылдыз Б. · Бишкек</div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="instagram-cta" id="contact">
-    <div class="ig-label reveal">Следите за нами</div>
-    <h2 class="ig-title reveal">Живые результаты<br><em>каждый день</em></h2>
-    <div class="ig-handle reveal">@fabao_kg</div>
-    <a href="https://instagram.com/fabao_kg" target="_blank" class="btn-ig reveal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
-      Открыть Instagram
-    </a>
-  </section>
+    <section class="cta" id="contact">
+      <div class="wrap">
+        <div class="cta-band reveal">
+          <div>
+            <p class="eyebrow">@fabao_kg</p>
+            <h2>Напишите «Консультация» в Direct</h2>
+            <p>Так же, как в Instagram: поможем выбрать тоник, маску или пептидный курс и ответим по наличию и доставке.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-dark" href="https://instagram.com/fabao_kg" target="_blank" rel="noopener">Открыть Instagram</a>
+            <a class="btn btn-line" href="https://wa.me/996505017013?text=%D0%9A%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F" target="_blank" rel="noopener">Или в WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <div class="footer-logo">FA<em>bao</em></div>
-    <div class="footer-links">
-      <a href="#products">Продукты</a>
-      <a href="#why">О бренде</a>
-      <a href="https://instagram.com/fabao_kg" target="_blank">Instagram</a>
+    <div class="wrap footer-row">
+      <div class="brand">FA<span>bao</span></div>
+      <div class="footer-links">
+        <a href="#products">Продукты</a>
+        <a href="https://instagram.com/fabao_kg" target="_blank" rel="noopener">Instagram</a>
+        <a href="tel:+996505017013">Позвонить</a>
+      </div>
+      <p class="footer-meta">© 2026 Fabao · fabao.hair · Бишкек</p>
     </div>
-    <div class="footer-copy">© 2025 Fabao · Кыргызстан · fabao.hair</div>
   </footer>
 
   <script>
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    const nav = document.getElementById("nav");
+    const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
   </script>
 </body>
 </html>
