@@ -35,7 +35,7 @@ To remove someone: delete them in **Authentication → Users** and run
 `delete from public.staff where email = 'name@example.com';`
 
 ## 5. Connect the website
-1. **Project Settings → API** (or **Data API**): copy the **Project URL** and the **anon public** key.
+1. **Project Settings → API** (or **Data API**): copy the **Project URL** and the **publishable** key (`sb_publishable_...`, called "anon public" on older projects).
 2. Paste them into [`assets/js/config.js`](../assets/js/config.js):
    ```js
    export const SUPABASE_URL = 'https://xxxx.supabase.co';

@@ -94,6 +94,17 @@ create trigger settings_touch before update on public.site_settings
   for each row execute function public.touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Table privileges for the website's API roles. Newer Supabase projects do
+-- not grant these automatically. Row level security below still decides
+-- which rows each role can see or change.
+-- ---------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated;
+grant select on public.brands, public.products, public.site_settings to anon;
+grant select, insert, update, delete on public.brands, public.products, public.site_settings to authenticated;
+grant select on public.staff to authenticated;
+grant execute on function public.is_staff() to anon, authenticated;
+
+-- ---------------------------------------------------------------------------
 -- Row level security: the public can only READ published rows,
 -- only staff can write.
 -- ---------------------------------------------------------------------------
