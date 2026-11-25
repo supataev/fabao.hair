@@ -1,0 +1,60 @@
+# Re-bakes the site from the database so staff edits in /admin reach the
+# static HTML (search engines, first paint). Visitors already see edits right
+# away: the page checks the database in the background and re-renders.
+#
+# Runs every hour, after every push to main, and on demand (Actions → Bake
+# content → Run workflow). Commits only when the content really changed, then
+# asks GitHub Pages to rebuild (pushes made with GITHUB_TOKEN don't trigger it).
+name: Bake content
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'index.html'
+      - 'ky/index.html'
+      - 'sitemap.xml'
+      - 'assets/img/p/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: bake
+  cancel-in-progress: false
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Commit if changed
+        id: commit
+        run: |
+          git add -A index.html ky/index.html sitemap.xml assets/img/p
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No content changes."
+          else
+            git config user.name "fabao-bake"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Bake content from the database"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Rebuild GitHub Pages
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
