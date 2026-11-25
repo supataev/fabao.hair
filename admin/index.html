@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Fabao · Админ-панель</title>
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+  <!-- Not configured -->
+  <section class="screen center js-screen" data-screen="setup" hidden>
+    <div class="card narrow">
+      <span class="wordmark"></span>
+      <h1>База данных не подключена</h1>
+      <p>Админ-панель заработает после настройки Supabase. Инструкция: <code>docs/SETUP.md</code> в репозитории сайта.</p>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section class="screen center js-screen" data-screen="login" hidden>
+    <form class="card narrow js-login">
+      <span class="wordmark"></span>
+      <h1>Вход для сотрудников</h1>
+      <label>Эл. почта<input type="email" name="email" autocomplete="username" required></label>
+      <label>Пароль<input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="btn btn-primary" type="submit">Войти</button>
+      <button class="btn-link js-forgot" type="button">Забыли пароль?</button>
+      <p class="msg js-login-msg" role="status"></p>
+    </form>
+  </section>
+
+  <!-- Set password (invite / reset link) -->
+  <section class="screen center js-screen" data-screen="password" hidden>
+    <form class="card narrow js-password">
+      <span class="wordmark"></span>
+      <h1>Придумайте пароль</h1>
+      <label>Новый пароль<input type="password" name="password" autocomplete="new-password" minlength="8" required></label>
+      <button class="btn btn-primary" type="submit">Сохранить и войти</button>
+      <p class="msg js-password-msg" role="status"></p>
+    </form>
+  </section>
+
+  <!-- No access -->
+  <section class="screen center js-screen" data-screen="denied" hidden>
+    <div class="card narrow">
+      <span class="wordmark"></span>
+      <h1>Нет доступа</h1>
+      <p>Аккаунт <b class="js-denied-email"></b> не добавлен в список сотрудников. Обратитесь к руководителю.</p>
+      <button class="btn js-logout" type="button">Выйти</button>
+    </div>
+  </section>
+
+  <!-- App -->
+  <section class="screen js-screen" data-screen="app" hidden>
+    <header class="topbar">
+      <span class="wordmark"></span>
+      <nav class="tabs" role="tablist">
+        <button type="button" role="tab" data-tab="products" aria-selected="true">Товары</button>
+        <button type="button" role="tab" data-tab="brands">Бренды</button>
+        <button type="button" role="tab" data-tab="texts">Тексты сайта</button>
+      </nav>
+      <div class="topbar-right">
+        <a class="btn-link" href="../" target="_blank" rel="noopener">Открыть сайт ↗</a>
+        <span class="who js-who"></span>
+        <button class="btn btn-small js-logout" type="button">Выйти</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Products -->
+      <div class="panel js-tab" data-tab="products">
+        <div class="toolbar">
+          <h2>Товары</h2>
+          <input class="search js-search" type="search" placeholder="Поиск по названию">
+          <select class="js-brand-filter"></select>
+          <button class="btn btn-primary js-add-product" type="button">+ Добавить товар</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th></th><th>Название</th><th>Бренд</th><th>Цена</th><th>В наличии</th><th>На сайте</th><th></th></tr></thead>
+            <tbody class="js-products"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Brands -->
+      <div class="panel js-tab" data-tab="brands" hidden>
+        <div class="toolbar">
+          <h2>Бренды</h2>
+          <button class="btn btn-primary js-add-brand" type="button">+ Добавить бренд</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Название</th><th>Страна</th><th>Порядок</th><th>На сайте</th><th></th></tr></thead>
+            <tbody class="js-brands"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Texts -->
+      <div class="panel js-tab" data-tab="texts" hidden>
+        <form class="js-texts">
+          <div class="toolbar">
+            <h2>Тексты сайта</h2>
+            <button class="btn btn-primary" type="submit">Сохранить тексты</button>
+          </div>
+          <div class="texts-grid js-texts-fields"></div>
+        </form>
+      </div>
+    </main>
+  </section>
+
+  <!-- Product editor -->
+  <dialog class="drawer js-product-dialog">
+    <form class="drawer-form js-product-form" method="dialog">
+      <header class="drawer-head">
+        <h2 class="js-product-title">Товар</h2>
+        <button class="icon-btn js-close" type="button" aria-label="Закрыть">×</button>
+      </header>
+      <div class="drawer-body">
+        <div class="image-field">
+          <div class="image-preview js-image-preview"></div>
+          <div>
+            <label class="btn btn-small file-btn">Загрузить фото<input type="file" accept="image/*" class="js-image-input" hidden></label>
+            <button type="button" class="btn-link js-image-remove">Убрать фото</button>
+            <p class="hint">JPG или PNG. Фото будет уменьшено автоматически.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <label>Название (RU) *<input name="name_ru" required></label>
+          <label>Название (KG)<input name="name_ky"></label>
+          <label>Бренд<select name="brand_id" class="js-brand-select"></select></label>
+          <label>Категория<select name="category" class="js-category-select"></select></label>
+          <label>Объём / вес<input name="volume" placeholder="например, 120 мл"></label>
+          <label>Цена, сом<input name="price_kgs" type="number" min="0" step="1" placeholder="пусто = «Цена по запросу»"></label>
+        </div>
+        <label>Описание (RU)<textarea name="description_ru" rows="5"></textarea></label>
+        <label>Описание (KG)<textarea name="description_ky" rows="5"></textarea></label>
+        <label>Как применять (RU)<textarea name="usage_ru" rows="3"></textarea></label>
+        <label>Как применять (KG)<textarea name="usage_ky" rows="3"></textarea></label>
+        <div class="grid-2">
+          <label>Порядок в каталоге<input name="sort_order" type="number" step="1"></label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" name="in_stock"> В наличии</label>
+            <label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label>
+            <label class="check"><input type="checkbox" name="is_featured"> Хит / рекомендуем</label>
+          </div>
+        </div>
+      </div>
+      <footer class="drawer-foot">
+        <button class="btn btn-danger js-delete-product" type="button">Удалить</button>
+        <span class="msg js-product-msg" role="status"></span>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Brand editor -->
+  <dialog class="drawer js-brand-dialog">
+    <form class="drawer-form js-brand-form" method="dialog">
+      <header class="drawer-head">
+        <h2 class="js-brand-title">Бренд</h2>
+        <button class="icon-btn js-close" type="button" aria-label="Закрыть">×</button>
+      </header>
+      <div class="drawer-body">
+        <div class="grid-2">
+          <label>Название *<input name="name" required></label>
+          <label>Порядок<input name="sort_order" type="number" step="1"></label>
+          <label>Страна (RU)<input name="country_ru"></label>
+          <label>Страна (KG)<input name="country_ky"></label>
+        </div>
+        <label>Описание (RU)<textarea name="description_ru" rows="4"></textarea></label>
+        <label>Описание (KG)<textarea name="description_ky" rows="4"></textarea></label>
+        <label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label>
+      </div>
+      <footer class="drawer-foot">
+        <button class="btn btn-danger js-delete-brand" type="button">Удалить</button>
+        <span class="msg js-brand-msg" role="status"></span>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast js-toast" role="status" hidden></div>
+
+  <script type="module" src="../assets/js/admin.js"></script>
+</body>
+</html>
