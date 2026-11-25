@@ -55,17 +55,17 @@ button { font: inherit; }
 .btn-gold:hover { background: var(--gold-soft); }
 
 /* Header */
-.header { position: sticky; top: 0; z-index: 20; background: rgba(250, 248, 243, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.header { position: sticky; top: 0; z-index: 20; background: var(--emerald); color: var(--ivory); border-bottom: 1px solid rgba(217, 194, 154, .25); }
 .header-inner { display: flex; align-items: center; gap: 24px; height: 72px; }
-.logo { color: var(--emerald); display: flex; }
+.logo { color: var(--ivory); display: flex; }
 .logo .wordmark { width: 104px; }
 .nav { display: flex; gap: 26px; margin-left: auto; }
-.nav a { text-decoration: none; font-size: .92rem; font-weight: 500; color: var(--mute); }
-.nav a:hover { color: var(--emerald); }
+.nav a { text-decoration: none; font-size: .92rem; font-weight: 500; color: rgba(243, 238, 227, .78); }
+.nav a:hover { color: var(--gold-soft); }
 .header-actions { display: flex; align-items: center; gap: 12px; }
-.lang { display: flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-.lang button { border: 0; background: none; padding: .3em .7em; border-radius: 999px; font-size: .78rem; font-weight: 700; color: var(--mute); cursor: pointer; }
-.lang button[aria-pressed="true"] { background: var(--emerald); color: var(--ivory); }
+.lang { display: flex; border: 1px solid rgba(243, 238, 227, .25); border-radius: 999px; padding: 3px; }
+.lang button { border: 0; background: none; padding: .3em .7em; border-radius: 999px; font-size: .78rem; font-weight: 700; color: rgba(243, 238, 227, .7); cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--ivory); color: var(--emerald); }
 
 /* Hero */
 .hero { padding: 72px 0 88px; }
