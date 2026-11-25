@@ -354,6 +354,20 @@ export function postCard(ctx, post, eager = false) {
 }
 export const postCards = (ctx, list) => list.map((p, i) => postCard(ctx, p, i === 0)).join('');
 
+// Story page: header (back link, date, title, intro, cover) and body.
+export function postHead(ctx, post) {
+  const { lang } = ctx;
+  const excerpt = loc(lang, post, 'excerpt');
+  return `<div class="wrap post-narrow">`
+    + `<nav class="crumbs" aria-label="${esc(t(lang, 'nav_label'))}"><a href="${path(lang, '/blog/')}">← ${esc(t(lang, 'blog_page_title'))}</a></nav>`
+    + `<p class="post-meta"><time datetime="${esc(post.published_on)}">${esc(formatDate(lang, post.published_on))}</time>${(post.tags || []).length ? ` · ${(post.tags || []).map(esc).join(', ')}` : ''}</p>`
+    + `<h1>${esc(loc(lang, post, 'title'))}</h1>`
+    + (excerpt ? `<p class="lead">${esc(excerpt)}</p>` : '')
+    + `</div>`
+    + (post.cover_url ? `<div class="wrap post-cover-wide">${picture(ctx, post.cover_url, '', 'hero', true)}</div>` : '');
+}
+export const postBody = (ctx, post) => richText(loc(ctx.lang, post, 'body'));
+
 export function blogTags(ctx) {
   const tags = [...new Set(publishedPosts(ctx).flatMap((p) => p.tags || []))];
   if (!tags.length) return '';

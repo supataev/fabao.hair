@@ -82,7 +82,7 @@ function layout(ctx, page) {
   // '/assets/…?v=<content hash>': new releases always load their own files
   const asset = (u) => (ctx.assetVersions?.[u] ? `${u}?v=${ctx.assetVersions[u]}` : u);
   const bake = {
-    lang, page: page.kind, brand: page.brand?.slug ?? null, sig: ctx.sig,
+    lang, page: page.kind, brand: page.brand?.slug ?? null, post: page.post?.id ?? null, sig: ctx.sig,
     data: ctx.data, images: ctx.images, brandLogos: ctx.brandLogos, popularity: ctx.popularity,
   };
 
@@ -405,7 +405,7 @@ ${brandPosts.length ? `
     <section class="section">
       <div class="wrap">
         ${sectionHead(T('blog_brand_stories'), '', `<a class="btn btn-line" href="${R.path(lang, '/blog/')}">${T('blog_all')}</a>`)}
-        <div class="post-grid">${R.postCards(ctx, brandPosts)}</div>
+        <div class="post-grid" data-r="brand-posts">${R.postCards(ctx, brandPosts)}</div>
       </div>
     </section>` : ''}
 ${others.length ? `
@@ -493,16 +493,8 @@ function postPage(ctx, post) {
   const imageUrl = img ? SITE + img.variants[img.variants.length - 1].webp : undefined;
   const body = `
     <article class="post">
-      <header class="post-head">
-        <div class="wrap post-narrow">
-          <nav class="crumbs" aria-label="${T('nav_label')}"><a href="${R.path(lang, '/blog/')}">← ${T('blog_page_title')}</a></nav>
-          <p class="post-meta"><time datetime="${R.esc(post.published_on)}">${R.esc(R.formatDate(lang, post.published_on))}</time>${(post.tags || []).length ? ` · ${(post.tags || []).map(R.esc).join(', ')}` : ''}</p>
-          <h1>${R.esc(title)}</h1>
-          ${excerpt ? `<p class="lead">${R.esc(excerpt)}</p>` : ''}
-        </div>
-        ${post.cover_url ? `<div class="wrap post-cover-wide">${R.picture(ctx, post.cover_url, '', 'hero', true)}</div>` : ''}
-      </header>
-      <div class="wrap post-narrow post-body">${R.richText(R.loc(lang, post, 'body'))}</div>
+      <header class="post-head" data-r="post-head">${R.postHead(ctx, post)}</header>
+      <div class="wrap post-narrow post-body" data-r="post-body">${R.postBody(ctx, post)}</div>
       <div class="wrap post-narrow post-cta">
         <p>${T('blog_cta_text')}</p>
         <a class="btn btn-emerald js-wa-consult" href="${R.esc(R.waLink(ctx, R.t(lang, 'wa_consult_msg')))}" target="_blank" rel="noopener" data-track="consult">${T('cta_consult')}</a>
@@ -519,11 +511,11 @@ ${more.length ? `
     <section class="section">
       <div class="wrap">
         ${sectionHead(T('blog_more'), '', `<a class="btn btn-line" href="${R.path(lang, '/blog/')}">${T('blog_all')}</a>`)}
-        <div class="post-grid">${R.postCards(ctx, more)}</div>
+        <div class="post-grid" data-r="post-more">${R.postCards(ctx, more)}</div>
       </div>
     </section>` : ''}`;
   return layout(ctx, {
-    kind: 'post', path: pagePath, active: 'blog', body,
+    kind: 'post', path: pagePath, active: 'blog', post, body,
     title: `${title} · Fabao`, description: excerpt || title,
     ld: [{ '@type': 'BlogPosting', headline: title, description: excerpt || undefined, image: imageUrl, datePublished: post.published_on,
       dateModified: (post.updated_at || post.published_on || '').slice(0, 10), inLanguage: lang, url: SITE + R.path(lang, pagePath),

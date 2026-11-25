@@ -328,6 +328,7 @@ if (bake.page === 'brand') {
 if (location.hash.startsWith('#p=')) openProduct(decodeURIComponent(location.hash.slice(3)), null);
 
 /* ---------- live refresh ---------- */
+const currentPost = () => (bake.post ? (ctx.data.posts || []).find((p) => p.id === bake.post) : null);
 const RENDERERS = {
   promos: () => R.promoSlides(ctx),
   'hero-brands': () => R.heroBrands(ctx),
@@ -336,6 +337,14 @@ const RENDERERS = {
   'brands-all': () => R.brandCards(ctx),
   'home-posts': () => R.postCards(ctx, R.publishedPosts(ctx).slice(0, 3)),
   'blog-list': () => R.postCards(ctx, R.publishedPosts(ctx)),
+  // story page (by id, so a renamed address still updates); null = leave as baked
+  'post-head': () => { const p = currentPost(); return p ? R.postHead(ctx, p) : null; },
+  'post-body': () => { const p = currentPost(); return p ? R.postBody(ctx, p) : null; },
+  'post-more': () => R.postCards(ctx, R.publishedPosts(ctx).filter((p) => p.id !== bake.post).slice(0, 3)),
+  'brand-posts': () => {
+    const b = ctx.data.brands.find((x) => x.slug === bake.brand);
+    return b ? R.postCards(ctx, R.publishedPosts(ctx).filter((p) => p.brand_id === b.id).slice(0, 3)) : null;
+  },
   catalog: () => R.productCards(ctx, R.rankProducts(ctx)),
   'brand-products': () => {
     const b = ctx.data.brands.find((x) => x.slug === bake.brand);
@@ -351,7 +360,12 @@ function rerender() {
   $$('.js-wa-wholesale').forEach((a) => { a.href = R.waLink(ctx, T('wa_wholesale_msg')); });
   $$('.js-wa-number').forEach((a) => { a.textContent = `+${R.waNumber(ctx)}`; });
   $$('.js-ig').forEach((a) => { a.href = `https://instagram.com/${R.igHandle(ctx)}`; a.textContent = `@${R.igHandle(ctx)}`; });
-  $$('[data-r]').forEach((n) => { const fn = RENDERERS[n.dataset.r]; if (fn) n.innerHTML = fn(); });
+  $$('[data-r]').forEach((n) => {
+    const html = RENDERERS[n.dataset.r]?.();
+    if (html != null) n.innerHTML = html;
+  });
+  const post = currentPost();
+  if (post) document.title = `${R.loc(ctx.lang, post, 'title')} · Fabao`;
   setupSlider.refresh?.();
   setupCatalog.apply?.();
   renderCart();
