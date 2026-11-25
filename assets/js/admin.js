@@ -67,36 +67,56 @@ async function boot() {
   if (session) await enter(session); else show('login');
 }
 
-/* ---------- 1-hour sessions ----------
-   Staff are signed out 1 hour after they sign in, even if the tab stays open
-   (Supabase would otherwise refresh the login for weeks). */
-const SESSION_MAX_MS = 60 * 60 * 1000;
-let expiryTimer;
-const signedInAt = (session) => Date.parse(session?.user?.last_sign_in_at ?? '') || 0;
-const sessionLeft = (session) => signedInAt(session) + SESSION_MAX_MS - Date.now();
+/* ---------- sign out after 1 hour of inactivity ----------
+   Supabase would otherwise keep a login alive for weeks. Any click, key,
+   scroll or typing in the panel resets the clock. The last activity time is
+   kept in localStorage, so it is shared by all admin tabs and survives a
+   closed tab (coming back after more than an hour means signing in again). */
+const IDLE_MAX_MS = 60 * 60 * 1000;
+const ACTIVITY_KEY = 'fabao-admin-last-activity';
+let idleTimer;
+let lastWrite = 0;
+
+const readActivity = () => { try { return Number(localStorage.getItem(ACTIVITY_KEY)) || 0; } catch { return 0; } };
+function markActivity(force = false) {
+  const now = Date.now();
+  if (!force && now - lastWrite < 15000) return; // write at most every 15 s
+  lastWrite = now;
+  try { localStorage.setItem(ACTIVITY_KEY, String(now)); } catch { /* storage unavailable */ }
+}
+const forgetActivity = () => { try { localStorage.removeItem(ACTIVITY_KEY); } catch { /* ignore */ } };
+const idleFor = () => Date.now() - (readActivity() || Date.now());
+const inApp = () => !$('[data-screen=app]').hidden;
 
 async function expireSession() {
-  clearTimeout(expiryTimer);
+  clearTimeout(idleTimer);
+  forgetActivity();
   await sb.auth.signOut({ scope: 'local' }).catch(() => {});
   $$('dialog[open]').forEach((d) => d.close());
   show('login');
-  $('.js-login-msg').textContent = 'Сессия закончилась (1 час). Войдите снова.';
+  $('.js-login-msg').textContent = 'Вы не работали в панели больше часа, поэтому вход закончился. Войдите снова.';
 }
 
-function watchSession(session) {
-  clearTimeout(expiryTimer);
-  expiryTimer = setTimeout(expireSession, Math.max(0, sessionLeft(session)));
+// Re-checks when the hour could be up, using the latest activity from any tab.
+function scheduleIdleCheck() {
+  clearTimeout(idleTimer);
+  const left = IDLE_MAX_MS - idleFor();
+  if (left <= 0) { expireSession(); return; }
+  idleTimer = setTimeout(scheduleIdleCheck, Math.min(left + 1000, 5 * 60 * 1000));
 }
 
-// Timers can run late in a sleeping tab, so check again when it comes back.
-document.addEventListener('visibilitychange', async () => {
-  if (document.hidden || !sb || $('[data-screen=app]').hidden) return;
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session || sessionLeft(session) <= 0) await expireSession();
+['pointerdown', 'keydown', 'wheel', 'touchstart', 'input'].forEach((type) => {
+  document.addEventListener(type, () => { if (inApp()) markActivity(); }, { passive: true, capture: true });
 });
 
-async function enter(session) {
-  if (sessionLeft(session) <= 0) { await expireSession(); return; }
+// Timers can run late in a sleeping tab, so check again when it comes back.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && sb && inApp()) scheduleIdleCheck();
+});
+
+async function enter(session, freshSignIn = false) {
+  if (freshSignIn || !readActivity()) markActivity(true);
+  if (idleFor() > IDLE_MAX_MS) { await expireSession(); return; }
   const { data: ok, error } = await sb.rpc('is_staff');
   if (error || !ok) {
     $('.js-denied-email').textContent = session.user.email;
@@ -105,7 +125,7 @@ async function enter(session) {
   }
   $('.js-who').textContent = session.user.email;
   show('app');
-  watchSession(session);
+  scheduleIdleCheck();
   await loadAll();
 }
 
@@ -117,7 +137,7 @@ $('.js-login').addEventListener('submit', async (e) => {
   const { data, error } = await sb.auth.signInWithPassword({ email: f.get('email'), password: f.get('password') });
   if (error) { msg.textContent = 'Неверная почта или пароль.'; return; }
   msg.textContent = '';
-  await enter(data.session);
+  await enter(data.session, true);
 });
 
 $('.js-forgot').addEventListener('click', async () => {
@@ -135,11 +155,12 @@ $('.js-password').addEventListener('submit', async (e) => {
   if (error) { msg.textContent = 'Не удалось сохранить пароль: ' + error.message; return; }
   history.replaceState(null, '', location.pathname);
   const { data: { session } } = await sb.auth.getSession();
-  await enter(session);
+  await enter(session, true);
 });
 
 $$('.js-logout').forEach((b) => b.addEventListener('click', async () => {
-  clearTimeout(expiryTimer);
+  clearTimeout(idleTimer);
+  forgetActivity();
   await sb.auth.signOut();
   show('login');
 }));
