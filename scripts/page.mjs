@@ -79,6 +79,8 @@ function layout(ctx, page) {
   const langLink = (l, label) => `<a href="${R.path(l, page.path)}" hreflang="${l}" lang="${l}"${l === lang ? ' aria-current="true"' : ''}>${label}</a>`;
   const langSwitch = `<nav class="lang" aria-label="${T('lang_label')}">${langLink('ru', 'RU')}${langLink('ky', 'KG')}</nav>`;
   const ld = { '@context': 'https://schema.org', '@graph': [storeLd(ctx), ...(page.ld || [])] };
+  // '/assets/…?v=<content hash>': new releases always load their own files
+  const asset = (u) => (ctx.assetVersions?.[u] ? `${u}?v=${ctx.assetVersions[u]}` : u);
   const bake = {
     lang, page: page.kind, brand: page.brand?.slug ?? null, sig: ctx.sig,
     data: ctx.data, images: ctx.images, brandLogos: ctx.brandLogos, popularity: ctx.popularity,
@@ -112,7 +114,8 @@ function layout(ctx, page) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="${asset('/assets/css/site.css')}">
+  <script type="importmap">${jsonForScript({ imports: Object.fromEntries(['/assets/js/render.js', '/assets/js/i18n.js', '/assets/js/config.js'].map((u) => [u, asset(u)])) })}</script>
   <script type="application/ld+json">${jsonForScript(ld)}</script>
 </head>
 <body class="page-${page.kind}">
@@ -197,7 +200,7 @@ ${page.body}
   <div class="toast js-toast" role="status" aria-live="polite" hidden></div>
 
   <script type="application/json" id="bake-data">${jsonForScript(bake)}</script>
-  <script type="module" src="/assets/js/site.js"></script>
+  <script type="module" src="${asset('/assets/js/site.js')}"></script>
 </body>
 </html>
 `;

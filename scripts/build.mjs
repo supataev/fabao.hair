@@ -169,7 +169,13 @@ const lastmod = [...data.brands, ...data.products, ...(data.promos || [])]
   .map((r) => r.updated_at).filter(Boolean).sort().pop()?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
 
 const changed = [];
-for (const [rel, html] of renderSite({ data, images, brandLogos, popularity, sig })) {
+// Content fingerprints for CSS/JS, so a new release never runs with a
+// browser's cached old files (GitHub Pages lets browsers cache for 10 min).
+const ASSETS = ['assets/css/site.css', 'assets/js/site.js', 'assets/js/render.js', 'assets/js/i18n.js', 'assets/js/config.js'];
+const assetVersions = {};
+for (const rel of ASSETS) assetVersions[`/${rel}`] = createHash('sha1').update(await readFile(join(repo, rel))).digest('hex').slice(0, 10);
+
+for (const [rel, html] of renderSite({ data, images, brandLogos, popularity, sig, assetVersions })) {
   if (await writeIfChanged(rel, html)) changed.push(rel);
 }
 await removeStaleBrandPages(data);
