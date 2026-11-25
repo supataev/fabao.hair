@@ -67,7 +67,36 @@ async function boot() {
   if (session) await enter(session); else show('login');
 }
 
+/* ---------- 1-hour sessions ----------
+   Staff are signed out 1 hour after they sign in, even if the tab stays open
+   (Supabase would otherwise refresh the login for weeks). */
+const SESSION_MAX_MS = 60 * 60 * 1000;
+let expiryTimer;
+const signedInAt = (session) => Date.parse(session?.user?.last_sign_in_at ?? '') || 0;
+const sessionLeft = (session) => signedInAt(session) + SESSION_MAX_MS - Date.now();
+
+async function expireSession() {
+  clearTimeout(expiryTimer);
+  await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+  $$('dialog[open]').forEach((d) => d.close());
+  show('login');
+  $('.js-login-msg').textContent = 'Сессия закончилась (1 час). Войдите снова.';
+}
+
+function watchSession(session) {
+  clearTimeout(expiryTimer);
+  expiryTimer = setTimeout(expireSession, Math.max(0, sessionLeft(session)));
+}
+
+// Timers can run late in a sleeping tab, so check again when it comes back.
+document.addEventListener('visibilitychange', async () => {
+  if (document.hidden || !sb || $('[data-screen=app]').hidden) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session || sessionLeft(session) <= 0) await expireSession();
+});
+
 async function enter(session) {
+  if (sessionLeft(session) <= 0) { await expireSession(); return; }
   const { data: ok, error } = await sb.rpc('is_staff');
   if (error || !ok) {
     $('.js-denied-email').textContent = session.user.email;
@@ -76,6 +105,7 @@ async function enter(session) {
   }
   $('.js-who').textContent = session.user.email;
   show('app');
+  watchSession(session);
   await loadAll();
 }
 
@@ -109,6 +139,7 @@ $('.js-password').addEventListener('submit', async (e) => {
 });
 
 $$('.js-logout').forEach((b) => b.addEventListener('click', async () => {
+  clearTimeout(expiryTimer);
   await sb.auth.signOut();
   show('login');
 }));
