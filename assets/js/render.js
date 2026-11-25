@@ -67,6 +67,8 @@ const SIZES = {
   card: '(max-width: 640px) calc(100vw - 32px), (max-width: 960px) 45vw, 290px',
   modal: '(max-width: 640px) calc(100vw - 32px), 430px',
   promo: '(max-width: 760px) 70vw, 420px',
+  hero: '100vw',
+  post: '(max-width: 640px) calc(100vw - 32px), (max-width: 960px) 45vw, 380px',
   collage: '(max-width: 760px) 40vw, 220px',
 };
 
@@ -252,28 +254,111 @@ export function catalogFilters(ctx) {
 }
 
 /* ---------- promo slider ---------- */
-const today = () => new Date().toISOString().slice(0, 10);
+// Dates are Bishkek dates (UTC+6): a story dated today is shown from local midnight.
+export const today = () => new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10);
 export const activePromos = (ctx) => (ctx.data.promos || []).filter((p) => (!p.starts_on || p.starts_on <= today()) && (!p.ends_on || p.ends_on >= today()));
 
 export function promoSlides(ctx) {
   const { lang } = ctx;
   const list = activePromos(ctx);
   return list.map((p, i) => {
-    const href = linkFor(ctx, p.link);
+    const post = p.post_id && (ctx.data.posts || []).find((x) => x.id === p.post_id);
+    const href = linkFor(ctx, p.link) || (post ? postUrl(ctx, post) : null);
     const brand = p.brand_id && ctx.data.brands.find((b) => b.id === p.brand_id);
     const accent = p.theme === 'brand' && brand?.accent_color ? `--accent:${esc(brand.accent_color)};` : '';
     const title = loc(lang, p, 'title');
     const external = href && /^https:/.test(href);
-    return `<article class="promo-slide theme-${esc(p.theme)}" style="${accent}" role="group" aria-roledescription="${esc(t(lang, 'slide'))}" aria-label="${i + 1} / ${list.length}" data-index="${i}">`
+    const target = external ? ' target="_blank" rel="noopener"' : '';
+    const attrs = `role="group" aria-roledescription="${esc(t(lang, 'slide'))}" aria-label="${i + 1} / ${list.length}" data-index="${i}"`;
+    const pos = esc(p.image_position || 'center');
+    // picture only: the photo fills the whole slide; the title is for screen readers
+    if (p.theme === 'image' && p.image_url) {
+      const img = picture(ctx, p.image_url, title, 'hero', i === 0);
+      return `<article class="promo-slide theme-image pos-${pos}" ${attrs}>`
+        + (href ? `<a class="promo-image-link" href="${esc(href)}"${target} data-track="promo_click" data-label="${esc(title)}">${img}<span class="visually-hidden">${esc(title)}</span></a>`
+          : `${img}`)
+        + `</article>`;
+    }
+    return `<article class="promo-slide theme-${esc(p.theme === 'image' ? 'emerald' : p.theme)}" style="${accent}" ${attrs}>`
+      + `<div class="wrap promo-inner">`
       + `<div class="promo-text">`
       + (brand ? `<p class="promo-brand">${logoMask(ctx, brand, 'hero')}</p>` : '')
+      + (post ? `<p class="promo-kicker">${esc(t(lang, 'nav_blog'))}</p>` : '')
       + `<p class="promo-title">${esc(title)}</p>`
       + (loc(lang, p, 'text') ? `<p class="promo-desc">${esc(loc(lang, p, 'text'))}</p>` : '')
-      + (href ? `<a class="btn promo-cta" href="${esc(href)}"${external ? ' target="_blank" rel="noopener"' : ''} data-track="promo_click" data-label="${esc(title)}">${esc(loc(lang, p, 'cta') || t(lang, 'more'))}</a>` : '')
+      + (href ? `<a class="btn promo-cta" href="${esc(href)}"${target} data-track="promo_click" data-label="${esc(title)}">${esc(loc(lang, p, 'cta') || (post ? t(lang, 'blog_read') : t(lang, 'more')))}</a>` : '')
       + `</div>`
-      + (p.image_url ? `<div class="promo-media">${picture(ctx, p.image_url, '', 'promo', i === 0)}</div>` : '')
-      + `</article>`;
+      + (p.image_url ? `<div class="promo-media pos-${pos}">${picture(ctx, p.image_url, '', 'promo', i === 0)}</div>` : '')
+      + `</div></article>`;
   }).join('');
+}
+
+export const carouselSettings = (ctx) => {
+  const sec = Number(ctx.data.settings?.carousel_interval?.ru);
+  return { autoplay: (ctx.data.settings?.carousel_autoplay?.ru ?? 'on') !== 'off', interval: sec >= 3 && sec <= 20 ? sec : 6 };
+};
+
+/* ---------- blog ---------- */
+export const postUrl = (ctx, post) => path(ctx.lang, `/blog/${post.slug}/`);
+const MONTHS = {
+  ru: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+  ky: ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'],
+};
+export function formatDate(lang, iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  return lang === 'ky' ? `${y}-жылдын ${d}-${MONTHS.ky[m - 1]}` : `${d} ${MONTHS.ru[m - 1]} ${y}`;
+}
+export const publishedPosts = (ctx) => [...(ctx.data.posts || [])]
+  .filter((p) => !p.published_on || p.published_on <= today())
+  .sort((a, b) => String(b.published_on).localeCompare(String(a.published_on)));
+const tagSlug = (tag) => String(tag).toLowerCase().trim().replace(/\s+/g, '-');
+
+// Tiny, safe formatter for story text: escapes everything first, then allows
+// «## »/«### » headings, «- » lists, **bold** and [links](https://… or /path).
+export function richText(text) {
+  const inline = (line) => esc(line)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+|\/[^\s)]*)\)/g, (_, label, href) => `<a href="${href}"${href.startsWith('https') ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`);
+  const out = [];
+  let para = [];
+  let list = [];
+  const flushPara = () => { if (para.length) out.push(`<p>${para.map(inline).join('<br>')}</p>`); para = []; };
+  const flushList = () => { if (list.length) out.push(`<ul>${list.map((l) => `<li>${inline(l)}</li>`).join('')}</ul>`); list = []; };
+  for (const raw of String(text || '').split('\n')) {
+    const line = raw.trim();
+    const h = line.match(/^(#{2,3})\s+(.+)/);
+    const li = line.match(/^-\s+(.+)/);
+    if (!line) { flushPara(); flushList(); } else if (h) {
+      flushPara(); flushList();
+      out.push(`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`);
+    } else if (li) { flushPara(); list.push(li[1]); } else { flushList(); para.push(line); }
+  }
+  flushPara();
+  flushList();
+  return out.join('');
+}
+
+export function postCard(ctx, post, eager = false) {
+  const { lang } = ctx;
+  const title = loc(lang, post, 'title');
+  const tags = (post.tags || []);
+  return `<article class="post-card" data-tags="${esc(tags.map(tagSlug).join(' '))}">`
+    + `<a class="post-cover" href="${postUrl(ctx, post)}" tabindex="-1" aria-hidden="true">${post.cover_url ? picture(ctx, post.cover_url, '', 'post', eager) : '<span class="wordmark"></span>'}</a>`
+    + `<div class="post-info">`
+    + `<p class="post-meta"><time datetime="${esc(post.published_on)}">${esc(formatDate(lang, post.published_on))}</time>${tags.length ? ` · ${tags.map(esc).join(', ')}` : ''}</p>`
+    + `<h3><a href="${postUrl(ctx, post)}">${esc(title)}</a></h3>`
+    + (loc(lang, post, 'excerpt') ? `<p class="post-excerpt">${esc(loc(lang, post, 'excerpt'))}</p>` : '')
+    + `<a class="link-arrow" href="${postUrl(ctx, post)}" aria-hidden="true" tabindex="-1">${esc(t(lang, 'blog_read'))}</a>`
+    + `</div></article>`;
+}
+export const postCards = (ctx, list) => list.map((p, i) => postCard(ctx, p, i === 0)).join('');
+
+export function blogTags(ctx) {
+  const tags = [...new Set(publishedPosts(ctx).flatMap((p) => p.tags || []))];
+  if (!tags.length) return '';
+  const chip = (value, label) => `<button type="button" class="chip" data-tag="${esc(value)}" aria-pressed="${value === ''}">${esc(label)}</button>`;
+  return chip('', t(ctx.lang, 'blog_tags_all')) + tags.map((tg) => chip(tagSlug(tg), tg)).join('');
 }
 
 /* ---------- cart ---------- */
@@ -315,16 +400,16 @@ export const wholesalePoints = (ctx) => t(ctx.lang, 'wholesale_points').map((p) 
 /* ---------- data ---------- */
 // A short fingerprint of the content, to tell whether the database changed since the bake.
 export function signature(data) {
-  const rows = [...data.brands, ...data.products, ...(data.promos || [])].map((r) => `${r.id}@${r.updated_at ?? ''}`);
+  const rows = [...data.brands, ...data.products, ...(data.promos || []), ...(data.posts || [])].map((r) => `${r.id}@${r.updated_at ?? ''}`);
   const s = Object.entries(data.settings).map(([k, v]) => `${k}=${v.ru}|${v.ky}`);
   return [...rows, ...s].sort().join(';');
 }
 
 // Rows as returned by the database -> the shape the renderers use.
-export function normalize(brands, products, settingsRows, promos = []) {
+export function normalize(brands, products, settingsRows, promos = [], posts = []) {
   const settings = {};
   for (const row of settingsRows) settings[row.key] = { ru: row.value_ru ?? '', ky: row.value_ky ?? '' };
-  return { brands, products, settings, promos };
+  return { brands, products, settings, promos, posts };
 }
 
 export function normalizePopularity(rows = []) {
@@ -341,4 +426,5 @@ export const QUERIES = {
   products: 'products?select=*&is_published=eq.true&order=sort_order.asc,name_ru.asc',
   settings: 'site_settings?select=key,value_ru,value_ky&order=key.asc',
   promos: 'promos?select=*&is_published=eq.true&order=sort_order.asc,created_at.asc',
+  posts: 'posts?select=*&is_published=eq.true&order=published_on.desc,created_at.desc',
 };

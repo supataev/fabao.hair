@@ -177,13 +177,15 @@ function setupSlider() {
   const dots = $('.js-promo-dots', root);
   let index = 0;
   let timer = null;
-  let paused = reducedMotion;
+  // autoplay and speed come from admin → «Карусель»
+  const interval = Math.min(20, Math.max(3, Number(root.dataset.interval) || 6)) * 1000;
+  let paused = reducedMotion || root.dataset.autoplay === 'off';
 
   const pauseBtn = document.createElement('button');
   pauseBtn.type = 'button';
   pauseBtn.className = 'promo-arrow promo-pause';
   const setPauseLabel = () => {
-    pauseBtn.setAttribute('aria-label', paused ? (ctx.lang === 'ky' ? 'Ойнотуу' : 'Запустить слайды') : (ctx.lang === 'ky' ? 'Токтотуу' : 'Остановить слайды'));
+    pauseBtn.setAttribute('aria-label', paused ? T('slide_play') : T('slide_pause'));
     pauseBtn.innerHTML = paused
       ? '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>'
       : '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
@@ -204,7 +206,7 @@ function setupSlider() {
   }
   function schedule() {
     clearInterval(timer);
-    if (!paused && slides().length > 1) timer = setInterval(() => { if (!document.hidden) go(index + 1); }, 6000);
+    if (!paused && slides().length > 1) timer = setInterval(() => { if (!document.hidden) go(index + 1); }, interval);
   }
   // keep the index in sync with swipes
   let scrollTimer;
@@ -301,6 +303,21 @@ function setupCatalog() {
 }
 setupCatalog();
 
+/* ---------- blog: filter by topic ---------- */
+(() => {
+  const list = $('.js-blog-list');
+  const tags = $('.js-blog-tags');
+  if (!list || !tags) return;
+  const apply = (tag) => {
+    $$('.post-card', list).forEach((c) => { c.hidden = Boolean(tag) && !c.dataset.tags.split(' ').includes(tag); });
+    $$('[data-tag]', tags).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === tag)));
+    history.replaceState(null, '', location.pathname + (tag ? '?tag=' + encodeURIComponent(tag) : ''));
+  };
+  tags.addEventListener('click', (e) => { const b = e.target.closest('[data-tag]'); if (b) apply(b.dataset.tag); });
+  const initial = new URLSearchParams(location.search).get('tag');
+  if (initial) apply(initial);
+})();
+
 /* ---------- brand page ---------- */
 if (bake.page === 'brand') {
   const b = ctx.data.brands.find((x) => x.slug === bake.brand);
@@ -317,6 +334,8 @@ const RENDERERS = {
   'home-brands': () => R.brandCards(ctx, R.rankBrands(ctx).slice(0, R.HOME_BRANDS)),
   'home-products': () => R.productCards(ctx, R.rankProducts(ctx).slice(0, R.HOME_PRODUCTS)),
   'brands-all': () => R.brandCards(ctx),
+  'home-posts': () => R.postCards(ctx, R.publishedPosts(ctx).slice(0, 3)),
+  'blog-list': () => R.postCards(ctx, R.publishedPosts(ctx)),
   catalog: () => R.productCards(ctx, R.rankProducts(ctx)),
   'brand-products': () => {
     const b = ctx.data.brands.find((x) => x.slug === bake.brand);
@@ -347,10 +366,11 @@ async function refresh() {
     return res.json();
   };
   try {
-    const [brands, products, settings, promos] = await Promise.all([
+    const [brands, products, settings, promos, posts] = await Promise.all([
       get(R.QUERIES.brands), get(R.QUERIES.products), get(R.QUERIES.settings),
-      get(R.QUERIES.promos).catch(() => ctx.data.promos || [])]);
-    const data = R.normalize(brands, products, settings, promos);
+      get(R.QUERIES.promos).catch(() => ctx.data.promos || []),
+      get(R.QUERIES.posts).catch(() => ctx.data.posts || [])]);
+    const data = R.normalize(brands, products, settings, promos, posts);
     if (R.signature(data) === bake.sig) return;
     ctx.data = data;
     rerender();

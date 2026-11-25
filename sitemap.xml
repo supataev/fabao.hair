@@ -37,6 +37,18 @@
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/"/>
   </url>
   <url>
+    <loc>https://www.fabao.hair/blog/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/blog/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/"/>
+  </url>
+  <url>
     <loc>https://www.fabao.hair/brands/zhangguang-101/</loc>
     <lastmod>2026-11-25</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/zhangguang-101/"/>

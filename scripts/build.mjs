@@ -24,6 +24,7 @@ const args = process.argv.slice(2);
 const arg = (name) => { const i = args.indexOf(name); return i === -1 ? null : args[i + 1]; };
 const root = resolve(arg('--root') ?? repo);
 const WIDTHS = [480, 960];
+const WIDE_WIDTHS = [640, 1280, 1920];
 const IMG_DIR = 'assets/img/p';
 
 async function fromDatabase() {
@@ -35,19 +36,19 @@ async function fromDatabase() {
   };
   // optional parts: until supabase/patches/2026-11-structure.sql runs they don't exist
   const optional = (p) => p.catch((e) => { console.warn(`! ${e.message} (skipped)`); return []; });
-  const [brands, products, settings, promos] = await Promise.all([
-    get(QUERIES.brands), get(QUERIES.products), get(QUERIES.settings), optional(get(QUERIES.promos))]);
+  const [brands, products, settings, promos, posts] = await Promise.all([
+    get(QUERIES.brands), get(QUERIES.products), get(QUERIES.settings), optional(get(QUERIES.promos)), optional(get(QUERIES.posts))]);
   const popRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/catalog_popularity`, {
     method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: '{"days":60}' });
   const popularity = popRes.ok ? normalizePopularity(await popRes.json()) : (console.warn(`! popularity: HTTP ${popRes.status} (skipped)`), normalizePopularity());
-  return { data: normalize(brands, products, settings, promos), popularity };
+  return { data: normalize(brands, products, settings, promos, posts), popularity };
 }
 
 async function fromFile(file) {
   const raw = JSON.parse(await readFile(file, 'utf8'));
   const data = Array.isArray(raw.site_settings)
-    ? normalize(raw.brands, raw.products, raw.site_settings, raw.promos || [])
-    : { brands: raw.brands, products: raw.products, settings: raw.settings, promos: raw.promos || [] };
+    ? normalize(raw.brands, raw.products, raw.site_settings, raw.promos || [], raw.posts || [])
+    : { brands: raw.brands, products: raw.products, settings: raw.settings, promos: raw.promos || [], posts: raw.posts || [] };
   return { data, popularity: normalizePopularity(raw.popularity || []) };
 }
 
@@ -65,10 +66,16 @@ async function buildImages(data) {
   const images = {};
   const keep = new Set();
   await mkdir(join(root, IMG_DIR), { recursive: true });
+  // full-width slides and story covers need large sizes; everything else 480/960
+  const wide = new Set([
+    ...(data.promos || []).filter((p) => p.theme === 'image').map((p) => p.image_url),
+    ...(data.posts || []).map((p) => p.cover_url),
+  ].filter(Boolean));
   const urls = [...new Set([
     ...data.products.map((p) => p.image_url),
     ...(data.promos || []).map((p) => p.image_url),
     ...data.brands.map((b) => b.cover_url),
+    ...(data.posts || []).map((p) => p.cover_url),
   ].filter(Boolean))];
   for (const url of urls) {
     let buf;
@@ -76,7 +83,7 @@ async function buildImages(data) {
     const hash = createHash('sha1').update(buf).digest('hex').slice(0, 12);
     const meta = await sharp(buf).metadata();
     const variants = [];
-    for (const w of WIDTHS) {
+    for (const w of (wide.has(url) ? WIDE_WIDTHS : WIDTHS)) {
       const width = Math.min(w, meta.width);
       const height = Math.round((meta.height * width) / meta.width);
       const v = { w: width };
@@ -86,7 +93,7 @@ async function buildImages(data) {
         v[fmt] = `/${IMG_DIR}/${name}`;
         const out = join(root, IMG_DIR, name);
         if (await exists(out)) continue;
-        const img = sharp(buf).resize({ width, withoutEnlargement: true }).flatten({ background: '#ffffff' });
+        const img = sharp(buf).resize({ width, withoutEnlargement: true }).flatten({ background: '#ffffff' }).keepXmp(); // keeps AI-content labels
         await (fmt === 'avif' ? img.avif({ quality: 52, effort: 6 }) : img.webp({ quality: 78 })).toFile(out);
       }
       variants.push(v);
@@ -134,12 +141,18 @@ function toRanks(base, raw) {
   return { products: ranks(rankProducts(unfeatured)), brands: ranks(rankBrands(ctx)) };
 }
 
-// Remove pages of brands that no longer exist.
+// Remove pages of brands and stories that no longer exist (or are unpublished).
 async function removeStaleBrandPages(data) {
-  const keep = new Set(data.brands.map((b) => b.slug));
-  for (const dir of ['brands', 'ky/brands']) {
-    const entries = await readdir(join(root, dir), { withFileTypes: true }).catch(() => []);
-    for (const e of entries) if (e.isDirectory() && !keep.has(e.name)) await rm(join(root, dir, e.name), { recursive: true });
+  const today = new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10); // Bishkek date
+  const groups = [
+    [['brands', 'ky/brands'], new Set(data.brands.map((x) => x.slug))],
+    [['blog', 'ky/blog'], new Set((data.posts || []).filter((p) => !p.published_on || p.published_on <= today).map((p) => p.slug))],
+  ];
+  for (const [dirs, keep] of groups) {
+    for (const dir of dirs) {
+      const entries = await readdir(join(root, dir), { withFileTypes: true }).catch(() => []);
+      for (const e of entries) if (e.isDirectory() && !keep.has(e.name)) await rm(join(root, dir, e.name), { recursive: true });
+    }
   }
 }
 
@@ -161,5 +174,5 @@ for (const [rel, html] of renderSite({ data, images, brandLogos, popularity, sig
 }
 await removeStaleBrandPages(data);
 if (await writeIfChanged('sitemap.xml', renderSitemap(pagePaths(data), lastmod))) changed.push('sitemap.xml');
-console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${(data.promos || []).length} slides, ${Object.keys(images).length} images.`);
+console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${(data.promos || []).length} slides, ${(data.posts || []).length} posts, ${Object.keys(images).length} images.`);
 console.log(changed.length ? `Changed (${changed.length}): ${changed.join(', ')}` : 'No changes.');

@@ -16,6 +16,7 @@ on:
       - 'index.html'
       - 'brands/**'
       - 'products/**'
+      - 'blog/**'
       - 'ky/**'
       - 'sitemap.xml'
       - 'assets/img/p/**'
@@ -44,7 +45,7 @@ jobs:
       - name: Commit if changed
         id: commit
         run: |
-          git add -A index.html brands products ky sitemap.xml assets/img/p
+          git add -A index.html brands products blog ky sitemap.xml assets/img/p
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No content changes."

@@ -70,6 +70,7 @@ function layout(ctx, page) {
   const nav = [
     ['products', R.path(lang, '/products/'), 'nav_catalog'],
     ['brands', R.path(lang, '/brands/'), 'nav_brands'],
+    ['blog', R.path(lang, '/blog/'), 'nav_blog'],
     ['order', `${home}#order`, 'nav_delivery'],
     ['wholesale', `${home}#wholesale`, 'nav_wholesale'],
     ['contacts', `${home}#contacts`, 'nav_contacts'],
@@ -156,7 +157,7 @@ ${page.body}
   <footer class="footer">
     <div class="wrap footer-inner">
       <span class="wordmark wordmark-footer" role="img" aria-label="Fabao"></span>
-      <nav class="footer-nav" aria-label="${T('nav_label')}">${nav.slice(0, 2).map(([, href, label]) => `<a href="${href}">${T(label)}</a>`).join('')}<a href="${home}#contacts">${T('nav_contacts')}</a></nav>
+      <nav class="footer-nav" aria-label="${T('nav_label')}">${nav.slice(0, 3).map(([, href, label]) => `<a href="${href}">${T(label)}</a>`).join('')}<a href="${home}#contacts">${T('nav_contacts')}</a></nav>
       <p>${T('footer_rights')}</p>
       <p class="muted">© <span class="js-year">${new Date().getFullYear()}</span> Fabao</p>
     </div>
@@ -269,8 +270,9 @@ function homePage(ctx) {
   const promos = R.activePromos(ctx);
   const brands = R.rankBrands(ctx).slice(0, R.HOME_BRANDS);
   const products = R.rankProducts(ctx).slice(0, R.HOME_PRODUCTS);
+  const posts = R.publishedPosts(ctx).slice(0, 3);
   const slider = promos.length ? `
-    <section class="promo js-promo" id="promos" aria-roledescription="carousel" aria-label="${T('promos_label')}">
+    <section class="promo js-promo" id="promos" aria-roledescription="carousel" aria-label="${T('promos_label')}" data-autoplay="${R.carouselSettings(ctx).autoplay ? 'on' : 'off'}" data-interval="${R.carouselSettings(ctx).interval}">
       <div class="promo-track js-promo-track" data-r="promos">${R.promoSlides(ctx)}</div>
       <div class="promo-controls">
         <button type="button" class="promo-arrow js-promo-prev" aria-label="${T('slide_prev')}">${R.ICONS.prev}</button>
@@ -311,6 +313,13 @@ function homePage(ctx) {
         <div class="product-grid" data-r="home-products">${R.productCards(ctx, products)}</div>
       </div>
     </section>
+${posts.length ? `
+    <section class="section" id="blog">
+      <div class="wrap">
+        ${sectionHead(T('blog_home_title'), T('blog_home_lead'), `<a class="btn btn-line" href="${R.path(lang, '/blog/')}">${T('blog_all')}</a>`)}
+        <div class="post-grid" data-r="home-posts">${R.postCards(ctx, posts)}</div>
+      </div>
+    </section>` : ''}
 ${orderSections(ctx)}`;
   return layout(ctx, {
     kind: 'home', path: '/', active: null, body,
@@ -347,6 +356,7 @@ function brandPage(ctx, b) {
   const T = (k) => R.esc(R.t(lang, k));
   const products = R.rankProducts(ctx, ctx.data.products.filter((p) => p.brand_id === b.id));
   const others = R.rankBrands(ctx).filter((x) => x.id !== b.id);
+  const brandPosts = R.publishedPosts(ctx).filter((x) => x.brand_id === b.id).slice(0, 3);
   const features = R.brandFeatures(ctx, b);
   const story = R.paragraphs(R.loc(lang, b, 'story'));
   const tagline = R.loc(lang, b, 'tagline') || R.loc(lang, b, 'description');
@@ -388,6 +398,13 @@ ${story ? `
         <div class="product-grid" data-r="brand-products">${R.productCards(ctx, products)}</div>
       </div>
     </section>
+${brandPosts.length ? `
+    <section class="section">
+      <div class="wrap">
+        ${sectionHead(T('blog_brand_stories'), '', `<a class="btn btn-line" href="${R.path(lang, '/blog/')}">${T('blog_all')}</a>`)}
+        <div class="post-grid">${R.postCards(ctx, brandPosts)}</div>
+      </div>
+    </section>` : ''}
 ${others.length ? `
     <section class="section section-tint">
       <div class="wrap">
@@ -433,6 +450,85 @@ function productsPage(ctx) {
   });
 }
 
+function blogPage(ctx) {
+  const { lang } = ctx;
+  const T = (k) => R.esc(R.t(lang, k));
+  const posts = R.publishedPosts(ctx);
+  const tags = R.blogTags(ctx);
+  const body = `
+    <section class="page-head">
+      <div class="wrap">
+        <h1>${T('blog_page_title')}</h1>
+        <p class="lead">${T('blog_page_lead')}</p>
+      </div>
+    </section>
+    <section class="section section-flush">
+      <div class="wrap">
+        ${tags ? `<div class="filter-row blog-tags js-blog-tags" role="group" aria-label="${T('blog_tags_label')}">${tags}</div>` : ''}
+        <div class="post-grid js-blog-list" data-r="blog-list">${posts.length ? R.postCards(ctx, posts) : `<p class="empty">${T('blog_empty')}</p>`}</div>
+      </div>
+    </section>`;
+  return layout(ctx, {
+    kind: 'blog', path: '/blog/', active: 'blog', body,
+    title: R.t(lang, 'meta_blog_title'), description: R.t(lang, 'meta_blog_description'),
+    ld: [{ '@type': 'Blog', name: R.t(lang, 'blog_page_title'), url: SITE + R.path(lang, '/blog/'), inLanguage: lang,
+      blogPost: posts.map((p) => ({ '@type': 'BlogPosting', headline: R.loc(lang, p, 'title'), url: SITE + R.path(lang, `/blog/${p.slug}/`), datePublished: p.published_on })) },
+    breadcrumbs([[R.t(lang, 'nav_home'), SITE + R.path(lang, '/')], [R.t(lang, 'blog_page_title'), SITE + R.path(lang, '/blog/')]])],
+  });
+}
+
+function postPage(ctx, post) {
+  const { lang } = ctx;
+  const T = (k) => R.esc(R.t(lang, k));
+  const title = R.loc(lang, post, 'title');
+  const excerpt = R.loc(lang, post, 'excerpt');
+  const brand = post.brand_id && ctx.data.brands.find((b) => b.id === post.brand_id);
+  const more = R.publishedPosts(ctx).filter((p) => p.id !== post.id).slice(0, 3);
+  const brandProducts = brand ? R.rankProducts(ctx, ctx.data.products.filter((p) => p.brand_id === brand.id)).slice(0, 4) : [];
+  const pagePath = `/blog/${post.slug}/`;
+  const img = post.cover_url && ctx.images?.[post.cover_url];
+  const imageUrl = img ? SITE + img.variants[img.variants.length - 1].webp : undefined;
+  const body = `
+    <article class="post">
+      <header class="post-head">
+        <div class="wrap post-narrow">
+          <nav class="crumbs" aria-label="${T('nav_label')}"><a href="${R.path(lang, '/blog/')}">← ${T('blog_page_title')}</a></nav>
+          <p class="post-meta"><time datetime="${R.esc(post.published_on)}">${R.esc(R.formatDate(lang, post.published_on))}</time>${(post.tags || []).length ? ` · ${(post.tags || []).map(R.esc).join(', ')}` : ''}</p>
+          <h1>${R.esc(title)}</h1>
+          ${excerpt ? `<p class="lead">${R.esc(excerpt)}</p>` : ''}
+        </div>
+        ${post.cover_url ? `<div class="wrap post-cover-wide">${R.picture(ctx, post.cover_url, '', 'hero', true)}</div>` : ''}
+      </header>
+      <div class="wrap post-narrow post-body">${R.richText(R.loc(lang, post, 'body'))}</div>
+      <div class="wrap post-narrow post-cta">
+        <p>${T('blog_cta_text')}</p>
+        <a class="btn btn-emerald js-wa-consult" href="${R.esc(R.waLink(ctx, R.t(lang, 'wa_consult_msg')))}" target="_blank" rel="noopener" data-track="consult">${T('cta_consult')}</a>
+      </div>
+    </article>
+${brandProducts.length ? `
+    <section class="section section-tint">
+      <div class="wrap">
+        ${sectionHead(R.esc(R.t(lang, 'blog_related_products').replace('{brand}', brand.name)), '', `<a class="btn btn-line" href="${R.brandUrl(ctx, brand)}">${T('brand_more')}</a>`)}
+        <div class="product-grid">${R.productCards(ctx, brandProducts)}</div>
+      </div>
+    </section>` : ''}
+${more.length ? `
+    <section class="section">
+      <div class="wrap">
+        ${sectionHead(T('blog_more'), '', `<a class="btn btn-line" href="${R.path(lang, '/blog/')}">${T('blog_all')}</a>`)}
+        <div class="post-grid">${R.postCards(ctx, more)}</div>
+      </div>
+    </section>` : ''}`;
+  return layout(ctx, {
+    kind: 'post', path: pagePath, active: 'blog', body,
+    title: `${title} · Fabao`, description: excerpt || title,
+    ld: [{ '@type': 'BlogPosting', headline: title, description: excerpt || undefined, image: imageUrl, datePublished: post.published_on,
+      dateModified: (post.updated_at || post.published_on || '').slice(0, 10), inLanguage: lang, url: SITE + R.path(lang, pagePath),
+      author: { '@id': `${SITE}/#store` }, publisher: { '@id': `${SITE}/#store` } },
+    breadcrumbs([[R.t(lang, 'nav_home'), SITE + R.path(lang, '/')], [R.t(lang, 'blog_page_title'), SITE + R.path(lang, '/blog/')], [title, SITE + R.path(lang, pagePath)]])],
+  });
+}
+
 // Every page of the site: [file path, html]
 export function renderSite(base) {
   const files = [];
@@ -443,12 +539,15 @@ export function renderSite(base) {
     files.push([`${dir}brands/index.html`, brandsPage(ctx)]);
     files.push([`${dir}products/index.html`, productsPage(ctx)]);
     for (const b of ctx.data.brands) files.push([`${dir}brands/${b.slug}/index.html`, brandPage(ctx, b)]);
+    files.push([`${dir}blog/index.html`, blogPage(ctx)]);
+    for (const post of R.publishedPosts(ctx)) files.push([`${dir}blog/${post.slug}/index.html`, postPage(ctx, post)]);
   }
   return files;
 }
 
 export function pagePaths(data) {
-  return ['/', '/brands/', '/products/', ...data.brands.map((b) => `/brands/${b.slug}/`)];
+  const posts = (data.posts || []).filter((p) => !p.published_on || p.published_on <= R.today());
+  return ['/', '/brands/', '/products/', '/blog/', ...data.brands.map((b) => `/brands/${b.slug}/`), ...posts.map((p) => `/blog/${p.slug}/`)];
 }
 
 export function renderSitemap(paths, lastmod) {
