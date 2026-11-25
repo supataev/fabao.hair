@@ -84,4 +84,16 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/follicell/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/follicell/"/>
   </url>
+  <url>
+    <loc>https://www.fabao.hair/blog/kak-vybrat-tonik-101/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/kak-vybrat-tonik-101/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/kak-vybrat-tonik-101/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/"/>
+  </url>
 </urlset>
