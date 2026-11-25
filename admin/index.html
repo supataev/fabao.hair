@@ -63,6 +63,7 @@
         <button type="button" role="tab" data-tab="products" aria-selected="true">Товары</button>
         <button type="button" role="tab" data-tab="brands">Бренды</button>
         <button type="button" role="tab" data-tab="texts">Тексты сайта</button>
+        <button type="button" role="tab" data-tab="stats">Статистика</button>
       </nav>
       <div class="topbar-right">
         <a class="btn-link" href="../" target="_blank" rel="noopener">Открыть сайт ↗</a>
@@ -111,6 +112,34 @@
           </div>
           <div class="texts-grid js-texts-fields"></div>
         </form>
+      </div>
+
+      <!-- Stats -->
+      <div class="panel js-tab" data-tab="stats" hidden>
+        <div class="toolbar">
+          <h2>Статистика</h2>
+          <select class="js-stats-days" aria-label="Период">
+            <option value="7">7 дней</option>
+            <option value="30" selected>30 дней</option>
+            <option value="90">90 дней</option>
+          </select>
+        </div>
+        <p class="stats-note">Без cookies и личных данных: считаем только просмотры страниц и нажатия на кнопки.</p>
+        <div class="stats-cards js-stats-cards"></div>
+        <div class="stats-cols">
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Товар</th><th>Открыли</th><th>Заказ в WhatsApp</th></tr></thead>
+              <tbody class="js-stats-products"></tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>День</th><th>Просмотры</th><th>WhatsApp</th></tr></thead>
+              <tbody class="js-stats-days-table"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </main>
   </section>

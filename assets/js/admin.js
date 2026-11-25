@@ -417,6 +417,62 @@ $('.js-texts').addEventListener('submit', async (e) => {
 });
 
 /* ---------- dialogs ---------- */
+/* ---------- stats ---------- */
+const WA_EVENTS = ['consult', 'order', 'wholesale'];
+
+async function loadStats() {
+  const days = Number($('.js-stats-days').value);
+  const cards = $('.js-stats-cards');
+  const products = $('.js-stats-products');
+  const byDay = $('.js-stats-days-table');
+  cards.replaceChildren(el('p', { class: 'stats-note', text: 'Загружаем…' }));
+  products.replaceChildren();
+  byDay.replaceChildren();
+  const { data, error } = await sb.rpc('site_stats', { days });
+  if (error) {
+    cards.replaceChildren(el('p', { class: 'stats-note', text: 'Статистика заработает после запуска supabase/patches/2026-11-analytics.sql в Supabase.' }));
+    return;
+  }
+  const sum = (pred) => data.filter(pred).reduce((a, r) => a + Number(r.n), 0);
+  const stat = (n, label) => el('div', { class: 'stat' }, el('b', { text: n.toLocaleString('ru-RU') }), el('span', { text: label }));
+  cards.replaceChildren(
+    stat(sum((r) => r.event === 'pageview'), 'просмотров страницы'),
+    stat(sum((r) => WA_EVENTS.includes(r.event)), 'нажатий на WhatsApp'),
+    stat(sum((r) => r.event === 'order'), 'из них «Заказать» у товара'),
+    stat(sum((r) => r.event === 'wholesale'), 'запросов на опт'),
+    stat(sum((r) => r.event === 'instagram'), 'переходов в Instagram'),
+  );
+
+  const perProduct = {};
+  for (const r of data) {
+    if (!r.label || !['order', 'product_open'].includes(r.event)) continue;
+    perProduct[r.label] ??= { open: 0, order: 0 };
+    perProduct[r.label][r.event === 'order' ? 'order' : 'open'] += Number(r.n);
+  }
+  const rows = Object.entries(perProduct).sort((a, b) => b[1].order - a[1].order || b[1].open - a[1].open);
+  const none = () => [el('tr', {}, el('td', { class: 'empty', colspan: 3, text: 'Пока нет данных' }))];
+  products.replaceChildren(...(rows.length
+    ? rows.map(([name, v]) => el('tr', {}, el('td', { text: name }), el('td', { class: 'num', text: String(v.open) }), el('td', { class: 'num', text: String(v.order) })))
+    : none()));
+
+  const perDay = {};
+  for (const r of data) {
+    perDay[r.day] ??= { views: 0, wa: 0 };
+    if (r.event === 'pageview') perDay[r.day].views += Number(r.n);
+    if (WA_EVENTS.includes(r.event)) perDay[r.day].wa += Number(r.n);
+  }
+  const dayRows = Object.entries(perDay).sort((a, b) => b[0].localeCompare(a[0]));
+  byDay.replaceChildren(...(dayRows.length
+    ? dayRows.map(([d, v]) => el('tr', {},
+      el('td', { text: new Date(`${d}T00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) }),
+      el('td', { class: 'num', text: String(v.views) }),
+      el('td', { class: 'num', text: String(v.wa) })))
+    : none()));
+}
+
+$('.js-stats-days').addEventListener('change', loadStats);
+$('[role=tab][data-tab=stats]').addEventListener('click', loadStats);
+
 $$('dialog').forEach((d) => {
   $$('.js-close', d).forEach((b) => b.addEventListener('click', () => d.close()));
 });

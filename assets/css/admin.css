@@ -117,3 +117,13 @@ textarea { resize: vertical; }
   .image-field { flex-direction: column; align-items: flex-start; }
   .table th:nth-child(3), .table td:nth-child(3), .table th:nth-child(4), .table td:nth-child(4) { display: none; }
 }
+
+/* Stats */
+.stats-note { color: var(--mute); margin: 0 0 16px; }
+.stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.stat b { display: block; font-size: 2rem; line-height: 1.1; }
+.stat span { font-size: .8rem; color: var(--mute); }
+.stats-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
+.table td.num, .table th.num { text-align: right; }
+@media (max-width: 800px) { .stats-cols { grid-template-columns: 1fr; } }

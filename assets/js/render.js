@@ -93,7 +93,7 @@ export function productCards(ctx) {
       + `<span class="price">${esc(formatPrice(lang, p.price_kgs))}</span>`
       + `<span class="stock ${p.in_stock ? 'ok' : 'no'}">${esc(p.in_stock ? t(lang, 'in_stock') : t(lang, 'out_of_stock'))}</span>`
       + `</div>`
-      + `<a class="btn btn-emerald btn-block" href="${esc(waLink(ctx, t(lang, 'wa_order_msg') + name))}" target="_blank" rel="noopener" data-track="order">${esc(t(lang, 'order_whatsapp'))}</a>`
+      + `<a class="btn btn-emerald btn-block" href="${esc(waLink(ctx, t(lang, 'wa_order_msg') + name))}" target="_blank" rel="noopener" data-track="order" data-label="${esc(name)}">${esc(t(lang, 'order_whatsapp'))}</a>`
       + `</div></article>`;
   }).join('');
 }
@@ -110,7 +110,7 @@ export function productModal(ctx, p) {
     + `<p class="price">${esc(formatPrice(lang, p.price_kgs))}</p>`
     + `<p class="pre">${esc(loc(lang, p, 'description'))}</p>`
     + (usage ? `<h4>${esc(t(lang, 'how_to_use'))}</h4><p class="pre">${esc(usage)}</p>` : '')
-    + `<a class="btn btn-emerald" href="${esc(waLink(ctx, t(lang, 'wa_order_msg') + name))}" target="_blank" rel="noopener" data-track="order">${esc(t(lang, 'order_whatsapp'))}</a>`
+    + `<a class="btn btn-emerald" href="${esc(waLink(ctx, t(lang, 'wa_order_msg') + name))}" target="_blank" rel="noopener" data-track="order" data-label="${esc(name)}">${esc(t(lang, 'order_whatsapp'))}</a>`
     + `</div>`;
 }
 

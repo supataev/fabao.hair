@@ -8,6 +8,7 @@ Website of Fabao, the official distributor of ZhangGuang 101, DekoHair and Folli
 - `assets/js/i18n.js`: interface texts in Russian and Kyrgyz.
 - `admin/`: staff panel at fabao.hair/admin for products, brands and site texts.
 - `supabase/schema.sql`: database tables, security rules and starter content. `supabase/patches/`: one-off SQL changes, run by hand in the SQL Editor.
+- Statistics: `site.js` logs page views and WhatsApp/Instagram/product clicks into the `site_events` table (`supabase/patches/2026-11-analytics.sql`), only on fabao.hair, no cookies or personal data. Staff see totals in admin → «Статистика». Add `?track=debug` to a page URL to print events in the console instead.
 - `.github/workflows/bake.yml`: re-bakes every hour, after each push and on demand; commits only real changes and asks Pages to rebuild.
 - `_config.yml`: keeps this README, `docs/`, `supabase/`, `scripts/` and `data/` off the published site.
 

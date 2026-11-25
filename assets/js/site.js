@@ -11,8 +11,36 @@ const bake = JSON.parse($('#bake-data').textContent);
 const ctx = { lang: bake.lang, data: bake.data, images: bake.images };
 let filter = 'all';
 
-// Analytics hook: an analytics snippet can listen for 'fabao:track'.
-const track = (event) => document.dispatchEvent(new CustomEvent('fabao:track', { detail: { event } }));
+// Statistics: one row per page view or click in the site_events table
+// (supabase/patches/2026-11-analytics.sql). No cookies, no IP, nothing personal.
+// Only on the real site; add ?track=debug to print events instead of sending.
+const debugTrack = new URLSearchParams(location.search).get('track') === 'debug';
+const liveSite = /(^|\.)fabao\.hair$/.test(location.hostname);
+function track(event, label) {
+  const row = {
+    event,
+    lang: ctx.lang,
+    label: label ? String(label).slice(0, 160) : null,
+    referrer_host: (() => {
+      try { const h = new URL(document.referrer).hostname; return h && h !== location.hostname ? h.slice(0, 100) : null; } catch { return null; }
+    })(),
+    device: matchMedia('(max-width: 640px)').matches ? 'mobile' : 'desktop',
+  };
+  document.dispatchEvent(new CustomEvent('fabao:track', { detail: row }));
+  if (debugTrack) { console.info('[track]', row); return; }
+  if (!liveSite || !SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  fetch(`${SUPABASE_URL}/rest/v1/site_events`, {
+    method: 'POST',
+    keepalive: true, // still sent when the click opens WhatsApp
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify(row),
+  }).catch(() => {});
+}
 
 function applyFilter() {
   $$('.product-card').forEach((c) => { c.hidden = filter !== 'all' && c.dataset.brandId !== filter; });
@@ -28,7 +56,7 @@ function openProduct(id, from) {
   opener = from;
   $('.js-modal-body').innerHTML = R.productModal(ctx, p);
   modal.showModal();
-  track('product_open');
+  track('product_open', R.loc(ctx.lang, p, 'name'));
 }
 
 modal.addEventListener('click', (e) => {
@@ -44,8 +72,10 @@ document.addEventListener('click', (e) => {
   const p = e.target.closest('[data-product]');
   if (p) { openProduct(p.dataset.product, $('.product-title', p.closest('.product-card')) ?? p); return; }
   const tr = e.target.closest('[data-track]');
-  if (tr) track(tr.dataset.track);
+  if (tr) track(tr.dataset.track, tr.dataset.label);
 });
+
+addEventListener('load', () => track('pageview'), { once: true });
 
 // Mobile nav: show a fade on the side that has more links.
 const nav = $('.nav');
