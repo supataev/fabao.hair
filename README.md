@@ -6,7 +6,7 @@ Website of Fabao, the official distributor of ZhangGuang 101, DekoHair and Folli
 - `scripts/build.mjs` + `scripts/page.mjs`: read the published content from Supabase (read-only) and bake it into static HTML, `sitemap.xml` and AVIF/WebP images in `assets/img/p/`.
 - `assets/js/render.js`: HTML templates shared by the build and the browser. `assets/js/site.js` adds the brand filter and product dialog and re-renders if the database changed since the last bake.
 - `assets/js/i18n.js`: interface texts in Russian and Kyrgyz.
-- Brand logos: put `assets/img/brands/<brand slug>.svg` (or `.png`, transparent background) and rebuild. A brand without a file shows its name as text. Slugs: `zhangguang-101`, `dekohair`, `follicell`.
+- Brand logos: `assets/img/brands/<brand slug>.svg` (or `.png`), traced vectors with a tight viewBox (no margin). Cards show them in brand colours, the hero in one gold colour; all are sized by equal area. A brand without a file shows its name. Masters, incl. the full 章光101 SINCE 1974 lockup: `docs/brand-logos/`.
 - `admin/`: staff panel at fabao.hair/admin for products, brands and site texts.
 - `supabase/schema.sql`: database tables, security rules and starter content. `supabase/patches/`: one-off SQL changes, run by hand in the SQL Editor.
 - Statistics: `site.js` logs page views and WhatsApp/Instagram/product clicks into the `site_events` table (`supabase/patches/2026-11-analytics.sql`), only on fabao.hair, no cookies or personal data. Staff see totals in admin → «Статистика». Add `?track=debug` to a page URL to print events in the console instead.

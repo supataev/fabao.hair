@@ -60,25 +60,39 @@ const brandLine = (ctx, p) => {
 
 // Brand logos live in assets/img/brands/<slug>.svg|png (see scripts/build.mjs).
 const brandLogo = (ctx, b) => ctx.brandLogos?.[b.slug];
-// wide wordmarks are drawn shorter so they look as heavy as compact logos
-const wideLogo = (logo) => logo.w / logo.h > 3;
+
+// Optical sizing: every logo gets the same AREA (not the same height), so a
+// long wordmark and a compact mark look equally heavy side by side.
+const LOGO_AREA = { card: 7200, hero: 2600 };
+function logoSize(logo, kind) {
+  const ratio = logo.w / logo.h;
+  const area = LOGO_AREA[kind];
+  return { w: Math.round(Math.sqrt(area * ratio)), h: Math.round(Math.sqrt(area / ratio)) };
+}
 
 export function heroBrands(ctx) {
   return ctx.data.brands.map((b) => {
     const logo = brandLogo(ctx, b);
     if (!logo) return `<li>${esc(b.name)}</li>`;
-    // drawn as a mask so it takes the panel's gold colour
-    return `<li class="hero-brand-logo${wideLogo(logo) ? ' is-wide' : ''}"><span style="--logo:url('${esc(logo.src)}');aspect-ratio:${logo.w}/${logo.h}"></span><span class="visually-hidden">${esc(b.name)}</span></li>`;
+    const { w, h } = logoSize(logo, 'hero');
+    // one colour (the panel's gold) on the dark green panel
+    return `<li class="hero-brand-logo"><span class="logo-mask" style="--logo:url('${esc(logo.src)}');width:${w}px;height:${h}px"></span><span class="visually-hidden">${esc(b.name)}</span></li>`;
   }).join('');
+}
+
+function brandHeading(ctx, b) {
+  const logo = brandLogo(ctx, b);
+  if (!logo) return `<h3>${esc(b.name)}</h3>`;
+  const { w, h } = logoSize(logo, 'card');
+  // brand colours kept on the white card
+  return `<h3 class="brand-logo"><img src="${esc(logo.src)}" width="${w}" height="${h}" alt="${esc(b.name)}" loading="lazy" decoding="async"></h3>`;
 }
 
 export function brandCards(ctx) {
   const { lang } = ctx;
   return ctx.data.brands.map((b) => `<article class="brand-card">`
     + `<p class="brand-country">${esc(loc(lang, b, 'country'))}</p>`
-    + (brandLogo(ctx, b)
-      ? `<h3 class="brand-logo${wideLogo(brandLogo(ctx, b)) ? ' is-wide' : ''}"><img src="${esc(brandLogo(ctx, b).src)}" width="${brandLogo(ctx, b).w}" height="${brandLogo(ctx, b).h}" alt="${esc(b.name)}" loading="lazy" decoding="async"></h3>`
-      : `<h3>${esc(b.name)}</h3>`)
+    + brandHeading(ctx, b)
     + `<p>${esc(loc(lang, b, 'description'))}</p>`
     + `<a class="link-arrow" href="#catalog" data-brand="${esc(b.id)}">${esc(t(lang, 'brand_see'))}</a>`
     + `</article>`).join('');
