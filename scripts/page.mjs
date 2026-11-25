@@ -19,7 +19,7 @@ function storeLd(ctx) {
     url: `${SITE}/`,
     logo: { '@type': 'ImageObject', url: `${SITE}/assets/img/logo-512.png`, width: 512, height: 512 },
     image: OG_IMAGE,
-    description: R.t(ctx.lang, 'meta_description'),
+    description: R.tb(ctx, 'meta_description'),
     telephone: `+${R.waNumber(ctx)}`,
     address: { '@type': 'PostalAddress', addressLocality: R.setting(ctx, 'address') || 'Бишкек', addressCountry: 'KG' },
     areaServed: 'KG',
@@ -176,7 +176,7 @@ ${page.body}
       <span class="wordmark wordmark-footer" role="img" aria-label="Fabao"></span>
       <nav class="footer-nav" aria-label="${T('nav_label')}">${nav.slice(0, 3).map(([, href, label]) => `<a href="${href}">${T(label)}</a>`).join('')}<a href="${home}#contacts">${T('nav_contacts')}</a></nav>
       <nav class="footer-links" aria-label="${T('all_categories')}">${R.presentCategories(ctx).map((c) => `<a href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}${ctx.data.brands.map((b) => `<a href="${R.brandUrl(ctx, b)}">${R.esc(b.name)}</a>`).join('')}</nav>
-      <p>${T('footer_rights')}</p>
+      <p>${R.esc(R.tb(ctx, 'footer_rights'))}</p>
       <p class="muted">© <span class="js-year">${new Date().getFullYear()}</span> Fabao</p>
     </div>
   </footer>
@@ -341,7 +341,7 @@ ${posts.length ? `
 ${orderSections(ctx)}`;
   return layout(ctx, {
     kind: 'home', path: '/', active: null, body,
-    title: R.t(lang, 'meta_title'), ogTitle: R.t(lang, 'og_title'), description: R.t(lang, 'meta_description'),
+    title: R.t(lang, 'meta_title'), ogTitle: R.t(lang, 'og_title'), description: R.tb(ctx, 'meta_description'),
     ld: [{ '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: 'Fabao', alternateName: ['Фабао', 'fabao.hair'], inLanguage: LANGS, publisher: { '@id': `${SITE}/#store` },
       potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/products/?q={search_term_string}` }, 'query-input': 'required name=search_term_string' } },
       itemList(ctx, R.t(lang, 'popular_products_title'), products, SITE + R.path(lang, '/'))],
@@ -365,7 +365,7 @@ function brandsPage(ctx) {
     </section>`;
   return layout(ctx, {
     kind: 'brands', path: '/brands/', active: 'brands', body,
-    title: R.t(lang, 'meta_brands_title'), description: R.t(lang, 'meta_brands_description'),
+    title: R.tb(ctx, 'meta_brands_title'), description: R.t(lang, 'meta_brands_description'),
     ld: [breadcrumbs([[R.t(lang, 'nav_home'), SITE + R.path(lang, '/')], [R.t(lang, 'brands_page_title'), SITE + R.path(lang, '/brands/')]])],
   });
 }
@@ -452,7 +452,7 @@ function productsPage(ctx) {
       <div class="wrap">
         <h1>${T('products_page_title')}</h1>
         <p class="lead">${T('products_page_lead')}</p>
-        <nav class="category-links" aria-label="${T('all_categories')}">${R.presentCategories(ctx).map((c) => `<a class="chip" href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}</nav>
+        <nav class="category-links category-links-top" aria-label="${T('all_categories')}">${R.presentCategories(ctx).map((c) => `<a class="chip" href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}</nav>
       </div>
     </section>
     <section class="section section-flush">

@@ -9,6 +9,16 @@ export const esc = (v) => String(v ?? '')
 
 export const t = (lang, key) => STRINGS[lang]?.[key] ?? STRINGS.ru[key] ?? key;
 
+// Brand names as they are in the database: «ZhangGuang 101, Charismo и Follicell»
+export function brandList(ctx, sep = null) {
+  const names = [...(ctx.data?.brands || [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)).map((b) => b.name);
+  if (sep) return names.join(sep);
+  if (names.length < 2) return names.join('');
+  return `${names.slice(0, -1).join(', ')} ${ctx.lang === 'ky' ? 'жана' : 'и'} ${names.at(-1)}`;
+}
+// t() for texts that list the brands ({brands} / {brands_list})
+export const tb = (ctx, key) => t(ctx.lang, key).replace('{brands}', brandList(ctx)).replace('{brands_list}', brandList(ctx, ', '));
+
 // localized field, falling back to Russian
 export const loc = (lang, obj, field) => (lang === 'ky' && obj?.[`${field}_ky`]) || obj?.[`${field}_ru`] || '';
 
@@ -305,10 +315,16 @@ export function catalogFilters(ctx) {
   const { lang } = ctx;
   const cats = [...new Set(ctx.data.products.map((p) => p.category).filter(Boolean))];
   const chip = (group, value, label) => `<button type="button" class="chip" data-filter-${group}="${esc(value)}" aria-pressed="${value === ''}">${esc(label)}</button>`;
-  return `<div class="catalog-search"><label class="visually-hidden" for="q">${esc(t(lang, 'search_label'))}</label>`
+  return `<div class="catalog-top"><div class="catalog-search"><label class="visually-hidden" for="q">${esc(t(lang, 'search_label'))}</label>`
     + `${ICONS.search}<input id="q" type="search" class="js-q" placeholder="${esc(t(lang, 'search_placeholder'))}" autocomplete="off"></div>`
+    // phones: the chips fold behind this button (hidden on wider screens)
+    + `<button type="button" class="btn btn-line filter-toggle js-filter-toggle" aria-expanded="false" aria-controls="catalog-panel">`
+    + `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>`
+    + `<span>${esc(t(lang, 'filter_toggle'))}</span><span class="filter-count js-filter-count" hidden></span></button></div>`
+    + `<div class="catalog-panel" id="catalog-panel">`
     + `<div class="filter-row" role="group" aria-label="${esc(t(lang, 'filter_label'))}">${chip('brand', '', t(lang, 'filter_all_brands'))}${rankBrands(ctx).map((b) => chip('brand', b.slug, b.name)).join('')}</div>`
     + `<div class="filter-row" role="group" aria-label="${esc(t(lang, 'filter_cat_label'))}">${chip('cat', '', t(lang, 'filter_all_cats'))}${cats.map((c) => chip('cat', c, STRINGS[lang].cat[c] || c)).join('')}</div>`
+    + `</div>`
     + `<div class="catalog-bar"><p class="catalog-count js-count" aria-live="polite"></p>`
     + `<label class="sort">${esc(t(lang, 'sort_label'))} <select class="js-sort">`
     + ['popular', 'price_asc', 'price_desc', 'name'].map((s) => `<option value="${s}">${esc(t(lang, `sort_${s}`))}</option>`).join('')

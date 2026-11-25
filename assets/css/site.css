@@ -477,3 +477,19 @@ a.product-title:hover { color: var(--emerald); text-decoration: underline; text-
   .product-page-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .product-page-img { position: static; aspect-ratio: 4 / 3; }
 }
+
+/* /products/: filters fold behind «Фильтр» on phones */
+.catalog-top { display: flex; gap: 10px; align-items: center; }
+.catalog-top .catalog-search { flex: 1 1 auto; }
+.catalog-panel { display: grid; gap: 14px; }
+.filter-toggle { display: none; flex: none; gap: 8px; padding: .75em 1.1em; }
+.filter-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--emerald); color: var(--ivory); font-size: .75rem; line-height: 20px; }
+.filter-toggle[aria-expanded="true"] { background: var(--emerald-soft); }
+@media (max-width: 760px) {
+  .filter-toggle { display: inline-flex; }
+  .catalog-panel { display: none; }
+  .catalog-filters.is-open .catalog-panel { display: grid; }
+  .category-links-top { display: none; } /* the same categories are in the panel and the footer */
+  .page-head { padding-top: 32px; }
+  .page-head .lead { font-size: 1rem; }
+}

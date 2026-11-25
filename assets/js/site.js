@@ -273,6 +273,9 @@ function setupCatalog() {
     $$('[data-filter-brand]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filterBrand === state.brand)));
     $$('[data-filter-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filterCat === state.cat)));
     $('.js-count').textContent = T('found').replace('{n}', shown);
+    const active = Number(Boolean(state.brand)) + Number(Boolean(state.cat));
+    $('.js-filter-count').textContent = active;
+    $('.js-filter-count').hidden = !active;
     $('.js-no-results').hidden = shown > 0;
     const next = new URLSearchParams();
     if (state.brand) next.set('brand', state.brand);
@@ -282,6 +285,16 @@ function setupCatalog() {
     history.replaceState(null, '', `${location.pathname}${next.toString() ? `?${next}` : ''}${location.hash}`);
   }
   setupCatalog.apply = apply;
+
+  // phones: «Фильтр» opens / closes the chips; the button shows how many filters are on
+  const toggle = $('.js-filter-toggle');
+  const root = $('.js-catalog-filters');
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    root.classList.toggle('is-open', open);
+  });
+  if (state.brand || state.cat) { toggle.setAttribute('aria-expanded', 'true'); root.classList.add('is-open'); }
 
   $('.js-catalog-filters').addEventListener('click', (e) => {
     const b = e.target.closest('[data-filter-brand]');
