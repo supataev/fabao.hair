@@ -63,7 +63,8 @@
         <button type="button" role="tab" data-tab="products" aria-selected="true">Товары</button>
         <button type="button" role="tab" data-tab="brands">Бренды</button>
         <button type="button" role="tab" data-tab="texts">Тексты сайта</button>
-        <button type="button" role="tab" data-tab="promos">Акции</button>
+        <button type="button" role="tab" data-tab="promos">Карусель</button>
+        <button type="button" role="tab" data-tab="posts">Блог</button>
         <button type="button" role="tab" data-tab="stats">Статистика</button>
       </nav>
       <div class="topbar-right">
@@ -118,14 +119,41 @@
       <!-- Promos (slider) -->
       <div class="panel js-tab" data-tab="promos" hidden>
         <div class="toolbar">
-          <h2>Акции и слайды</h2>
+          <h2>Карусель</h2>
           <button class="btn btn-primary js-add-promo" type="button">+ Добавить слайд</button>
         </div>
-        <p class="hint">Слайды в карусели под меню на главной: акции, скидки, новинки, события. Показываются по порядку; можно задать даты начала и конца.</p>
+        <form class="settings-card js-carousel-settings">
+          <div>
+            <h3>Настройки</h3>
+            <p class="hint">Карусель — на всю ширину под меню на главной странице. Слайды идут в порядке списка ниже.</p>
+          </div>
+          <label class="check"><input type="checkbox" name="autoplay"> Листать автоматически</label>
+          <label>Смена слайда каждые
+            <select name="interval">
+              <option value="4">4 секунды</option><option value="5">5 секунд</option><option value="6">6 секунд</option>
+              <option value="8">8 секунд</option><option value="10">10 секунд</option><option value="12">12 секунд</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" type="submit">Сохранить</button>
+        </form>
         <div class="table-wrap">
           <table class="table">
-            <thead><tr><th></th><th>Заголовок</th><th>Период</th><th>Порядок</th><th>На сайте</th><th></th></tr></thead>
+            <thead><tr><th></th><th>Слайд</th><th>Период</th><th>Порядок</th><th>На сайте</th><th></th></tr></thead>
             <tbody class="js-promos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Blog -->
+      <div class="panel js-tab" data-tab="posts" hidden>
+        <div class="toolbar">
+          <h2>Блог</h2>
+          <button class="btn btn-primary js-add-post" type="button">+ Новая статья</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th></th><th>Статья</th><th>Дата</th><th>В карусели</th><th>На сайте</th><th></th></tr></thead>
+            <tbody class="js-posts"></tbody>
           </table>
         </div>
       </div>
@@ -205,6 +233,50 @@
     </form>
   </dialog>
 
+  <!-- Post editor -->
+  <dialog class="drawer drawer-wide js-post-dialog">
+    <form class="drawer-form js-post-form" method="dialog">
+      <header class="drawer-head">
+        <h2 class="js-post-title">Статья</h2>
+        <button class="icon-btn js-close" type="button" aria-label="Закрыть">×</button>
+      </header>
+      <div class="drawer-body">
+        <div class="image-field">
+          <div class="image-preview image-preview-wide js-post-image-preview"></div>
+          <div>
+            <label class="btn btn-small file-btn">Загрузить обложку<input type="file" accept="image/*" class="js-post-image-input" hidden></label>
+            <button type="button" class="btn-link js-post-image-remove">Убрать обложку</button>
+            <p class="hint">Горизонтальное фото, от 1600 px по ширине.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <label>Заголовок (RU) *<input name="title_ru" required maxlength="140"></label>
+          <label>Заголовок (KG)<input name="title_ky" maxlength="140"></label>
+        </div>
+        <label>Адрес страницы<input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="80" class="js-post-slug"><span class="hint">fabao.hair/blog/<b class="js-slug-preview">…</b>/ — латиницей, создаётся из заголовка.</span></label>
+        <label>Коротко (RU)<textarea name="excerpt_ru" rows="2" maxlength="300"></textarea><span class="hint">1–2 предложения для карточки и поисковиков.</span></label>
+        <label>Коротко (KG)<textarea name="excerpt_ky" rows="2" maxlength="300"></textarea></label>
+        <label>Текст (RU)<textarea name="body_ru" rows="14"></textarea><span class="hint">Абзацы — через пустую строку. «## Подзаголовок», «- пункт списка», **жирный**, [ссылка](https://…).</span></label>
+        <label>Текст (KG)<textarea name="body_ky" rows="14"></textarea></label>
+        <div class="grid-2">
+          <label>Темы<input name="tags" placeholder="советы, ZhangGuang 101"><span class="hint">Через запятую.</span></label>
+          <label>Бренд<select name="brand_id" class="js-post-brand"></select><span class="hint">Статья появится на странице бренда.</span></label>
+          <label>Дата публикации<input name="published_on" type="date" required><span class="hint">Будущая дата — статья появится в этот день.</span></label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label>
+            <label class="check"><input type="checkbox" name="in_carousel"> Показать в карусели</label>
+          </div>
+        </div>
+      </div>
+      <footer class="drawer-foot">
+        <button class="btn btn-danger js-delete-post" type="button">Удалить</button>
+        <span class="msg js-post-msg" role="status"></span>
+        <a class="btn js-post-view" target="_blank" rel="noopener" hidden>Открыть ↗</a>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </footer>
+    </form>
+  </dialog>
+
   <!-- Promo editor -->
   <dialog class="drawer js-promo-dialog">
     <form class="drawer-form js-promo-form" method="dialog">
@@ -218,11 +290,11 @@
           <div>
             <label class="btn btn-small file-btn">Загрузить картинку<input type="file" accept="image/*" class="js-promo-image-input" hidden></label>
             <button type="button" class="btn-link js-promo-image-remove">Убрать картинку</button>
-            <p class="hint">Фото товара или баннер. Лучше квадратное или горизонтальное, на светлом фоне.</p>
+            <p class="hint">Фото товара или баннер. Для «Только картинка» — широкое фото (примерно 21:9), от 1600 px по ширине.</p>
           </div>
         </div>
         <div class="grid-2">
-          <label>Заголовок (RU) *<input name="title_ru" required maxlength="90"></label>
+          <label>Заголовок (RU) *<input name="title_ru" required maxlength="120"><span class="hint js-title-hint" hidden>Для «Только картинка» заголовок не виден: это описание фото для незрячих и поисковиков.</span></label>
           <label>Заголовок (KG)<input name="title_ky" maxlength="90"></label>
         </div>
         <label>Текст (RU)<textarea name="text_ru" rows="3" maxlength="220"></textarea></label>
@@ -234,13 +306,19 @@
         <label>Куда ведёт кнопка<input name="link" list="promo-links" placeholder="/products/ или whatsapp"><span class="hint">Выберите из списка или вставьте ссылку https://…  Пусто — без кнопки.</span></label>
         <datalist id="promo-links" class="js-promo-links"></datalist>
         <div class="grid-2">
-          <label>Оформление<select name="theme">
+          <label>Оформление<select name="theme" class="js-promo-theme">
+            <option value="image">Только картинка (на всю ширину)</option>
             <option value="emerald">Зелёный (Fabao)</option>
             <option value="ivory">Светлый</option>
             <option value="gold">Золотой</option>
             <option value="brand">В цвет бренда</option>
           </select></label>
           <label>Бренд (логотип на слайде)<select name="brand_id" class="js-promo-brand"></select></label>
+          <label>Фокус картинки<select name="image_position">
+            <option value="center">По центру</option><option value="top">Сверху</option><option value="bottom">Снизу</option>
+            <option value="left">Слева</option><option value="right">Справа</option>
+          </select><span class="hint">Какую часть фото сохранить, когда экран узкий.</span></label>
+          <label>Статья блога<select name="post_id" class="js-promo-post"></select><span class="hint">Кнопка поведёт на статью, если ссылка не указана.</span></label>
           <label>Показывать с<input name="starts_on" type="date"></label>
           <label>Показывать до<input name="ends_on" type="date"></label>
           <label>Порядок<input name="sort_order" type="number" step="1"></label>

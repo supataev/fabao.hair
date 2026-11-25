@@ -19,7 +19,7 @@ const TEXT_FIELDS = [
 ];
 
 let sb;
-const state = { brands: [], products: [], settings: {}, promos: [], promosReady: true, editingProduct: null, editingBrand: null, editingPromo: null, pendingImage: undefined, pendingPromoImage: undefined };
+const state = { brands: [], products: [], settings: {}, promos: [], promosReady: true, posts: [], postsReady: true, editingPost: null, pendingPostImage: undefined, slugTouched: false, editingProduct: null, editingBrand: null, editingPromo: null, pendingImage: undefined, pendingPromoImage: undefined };
 
 /* ---------- helpers ---------- */
 function show(screen) {
@@ -187,11 +187,16 @@ async function loadAll() {
   const promos = await sb.from('promos').select('*').order('sort_order').order('created_at');
   state.promosReady = !promos.error;
   state.promos = promos.data ?? [];
+  const posts = await sb.from('posts').select('*').order('published_on', { ascending: false }).order('created_at', { ascending: false });
+  state.postsReady = !posts.error;
+  state.posts = posts.data ?? [];
   renderBrandOptions();
   renderProducts();
   renderBrands();
   renderTexts();
   renderPromos();
+  renderPosts();
+  renderCarouselSettings();
 }
 
 /* ---------- products ---------- */
@@ -484,13 +489,15 @@ $('.js-texts').addEventListener('submit', async (e) => {
 /* ---------- dialogs ---------- */
 /* ---------- promos (slider) ---------- */
 const fmtDate = (d) => (d ? new Date(`${d}T00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : '');
-const todayIso = () => new Date().toISOString().slice(0, 10);
+const todayIso = () => new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 10); // Bishkek date
 
 function renderPromoLinks() {
   const opts = [
     ['/products/', 'Все товары'], ['/brands/', 'Все бренды'], ['whatsapp', 'Написать в WhatsApp'], ['/#wholesale', 'Опт'],
     ...state.brands.flatMap((b) => [[`/brands/${b.slug}/`, `Страница ${b.name}`], [`/products/?brand=${b.slug}`, `Товары ${b.name}`]]),
+    ['/blog/', 'Блог'], ...state.posts.map((x) => [`/blog/${x.slug}/`, `Статья: ${x.title_ru}`]),
   ];
+  $('.js-promo-post').replaceChildren(el('option', { value: '', text: '— нет —' }), ...state.posts.map((x) => el('option', { value: x.id, text: x.title_ru })));
   $('.js-promo-links').replaceChildren(...opts.map(([v, label]) => el('option', { value: v, label })));
   $('.js-promo-brand').replaceChildren(el('option', { value: '', text: '— без логотипа —' }), ...state.brands.map((b) => el('option', { value: b.id, text: b.name })));
 }
@@ -512,9 +519,13 @@ function renderPromos() {
     const period = p.starts_on || p.ends_on ? `${fmtDate(p.starts_on) || '…'} — ${fmtDate(p.ends_on) || '…'}` : 'всегда';
     return el('tr', {},
       el('td', { class: 'thumb' }, p.image_url ? el('img', { class: 'promo-thumb', src: p.image_url, alt: '' }) : el('span', { class: 'noimg' })),
-      el('td', {}, el('button', { type: 'button', class: 'row-link', text: p.title_ru, onclick: () => openPromo(p) })),
+      el('td', {}, el('button', { type: 'button', class: 'row-link', text: p.title_ru, onclick: () => openPromo(p) }),
+        p.theme === 'image' ? el('span', { class: 'tag', text: 'только фото' }) : null,
+        p.post_id ? el('span', { class: 'tag', text: 'статья' }) : null),
       el('td', {}, el('span', { class: `period${ended ? ' off' : ''}`, text: ended ? `${period} (закончилась)` : period })),
-      el('td', { text: String(p.sort_order) }),
+      el('td', { class: 'order' },
+        el('button', { type: 'button', class: 'btn btn-small', 'aria-label': 'Выше', text: '↑', disabled: state.promos[0] === p, onclick: () => movePromo(p, -1) }),
+        el('button', { type: 'button', class: 'btn btn-small', 'aria-label': 'Ниже', text: '↓', disabled: state.promos.at(-1) === p, onclick: () => movePromo(p, 1) })),
       el('td', {}, toggle(p.is_published, async (v) => {
         const { error } = await sb.from('promos').update({ is_published: v, updated_at: new Date().toISOString() }).eq('id', p.id);
         if (error) toast('Не сохранилось: ' + error.message, true); else { p.is_published = v; toast('Сохранено'); }
@@ -538,17 +549,19 @@ function openPromo(p) {
   $('.js-promo-title').textContent = p ? 'Редактировать слайд' : 'Новый слайд';
   $('.js-delete-promo').hidden = !p;
   $('.js-promo-msg').textContent = '';
-  const data = p ?? { is_published: true, theme: 'emerald', sort_order: (state.promos.at(-1)?.sort_order ?? 0) + 1 };
+  const data = p ?? { is_published: true, theme: 'emerald', image_position: 'center', sort_order: (state.promos.at(-1)?.sort_order ?? 0) + 10 };
   for (const input of form.elements) {
     if (!input.name) continue;
     if (input.type === 'checkbox') input.checked = Boolean(data[input.name]);
     else input.value = data[input.name] ?? '';
   }
   setPromoPreview(p?.image_url ?? null);
+  $('.js-title-hint').hidden = form.elements.theme.value !== 'image';
   $('.js-promo-dialog').showModal();
 }
 
 $('.js-add-promo').addEventListener('click', () => openPromo(null));
+$('.js-promo-theme').addEventListener('change', (e) => { $('.js-title-hint').hidden = e.target.value !== 'image'; });
 $('.js-promo-image-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -566,6 +579,10 @@ $('.js-promo-form').addEventListener('submit', async (e) => {
   const msg = $('.js-promo-msg');
   const str = (k) => emptyToNull(String(f.get(k) ?? '').trim());
   const link = str('link');
+  if (f.get('theme') === 'image' && !state.pendingPromoImage && (state.pendingPromoImage === null || !p?.image_url)) {
+    msg.textContent = 'Для «Только картинка» загрузите фото.';
+    return;
+  }
   if (link && !(link === 'whatsapp' || link.startsWith('/') || /^https:\/\//.test(link))) {
     msg.textContent = 'Ссылка должна начинаться с / или https://, либо быть «whatsapp».';
     return;
@@ -579,6 +596,7 @@ $('.js-promo-form').addEventListener('submit', async (e) => {
     title_ru: str('title_ru'), title_ky: str('title_ky'), text_ru: str('text_ru'), text_ky: str('text_ky'),
     cta_ru: str('cta_ru'), cta_ky: str('cta_ky'), link, theme: f.get('theme'), brand_id: str('brand_id'),
     starts_on: str('starts_on'), ends_on: str('ends_on'), sort_order: Number(f.get('sort_order') || 0),
+    image_position: f.get('image_position') || 'center', post_id: str('post_id'),
     is_published: form.elements.is_published.checked, updated_at: new Date().toISOString(),
   };
   try {
@@ -615,6 +633,203 @@ $('.js-delete-promo').addEventListener('click', async () => {
   $('.js-promo-dialog').close();
   toast('Слайд удалён');
   await loadAll();
+});
+
+/* ---------- carousel settings ---------- */
+function renderCarouselSettings() {
+  const form = $('.js-carousel-settings');
+  form.elements.autoplay.checked = (state.settings.carousel_autoplay?.value_ru ?? 'on') !== 'off';
+  form.elements.interval.value = state.settings.carousel_interval?.value_ru || '6';
+}
+$('.js-carousel-settings').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const autoplay = form.elements.autoplay.checked ? 'on' : 'off';
+  const interval = form.elements.interval.value;
+  const { error } = await sb.from('site_settings').upsert([
+    { key: 'carousel_autoplay', value_ru: autoplay, value_ky: autoplay },
+    { key: 'carousel_interval', value_ru: interval, value_ky: interval },
+  ]);
+  if (error) { toast('Ошибка: ' + error.message, true); return; }
+  toast('Настройки карусели сохранены');
+  await loadAll();
+});
+
+// Move a slide up or down: swap its order number with its neighbour.
+async function movePromo(p, dir) {
+  const list = state.promos;
+  const i = list.indexOf(p);
+  const j = i + dir;
+  if (j < 0 || j >= list.length) return;
+  const other = list[j];
+  // make orders distinct first, then swap
+  const a = i * 10 + 10;
+  const b = j * 10 + 10;
+  const now = new Date().toISOString();
+  const r1 = await sb.from('promos').update({ sort_order: b, updated_at: now }).eq('id', p.id);
+  const r2 = await sb.from('promos').update({ sort_order: a, updated_at: now }).eq('id', other.id);
+  const err = r1.error || r2.error;
+  if (err) { toast('Не сохранилось: ' + err.message, true); return; }
+  await loadAll();
+}
+
+/* ---------- blog ---------- */
+const TRANSLIT = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', ө: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ү: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', ң: 'n' };
+const postSlug = (title) => String(title || '').toLowerCase().split('').map((ch) => TRANSLIT[ch] ?? ch).join('')
+  .normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || `post-${Date.now()}`;
+const promoForPost = (post) => state.promos.find((x) => x.post_id === post.id);
+
+function renderPosts() {
+  const body = $('.js-posts');
+  if (!state.postsReady) {
+    body.replaceChildren(el('tr', {}, el('td', { class: 'empty', colspan: 6, text: 'Блог заработает после запуска supabase/patches/2026-11-blog.sql в Supabase.' })));
+    $('.js-add-post').disabled = true;
+    return;
+  }
+  $('.js-add-post').disabled = false;
+  if (!state.posts.length) {
+    body.replaceChildren(el('tr', {}, el('td', { class: 'empty', colspan: 6, text: 'Статей пока нет. Нажмите «+ Новая статья».' })));
+    return;
+  }
+  body.replaceChildren(...state.posts.map((p) => el('tr', {},
+    el('td', { class: 'thumb' }, p.cover_url ? el('img', { class: 'promo-thumb', src: p.cover_url, alt: '' }) : el('span', { class: 'noimg' })),
+    el('td', {}, el('button', { type: 'button', class: 'row-link', text: p.title_ru, onclick: () => openPost(p) }),
+      (p.tags || []).length ? el('span', { class: 'tag', text: p.tags.join(', ') }) : null),
+    el('td', {}, el('span', { class: 'period', text: fmtDate(p.published_on) + (p.published_on > todayIso() ? ' (запланирована)' : '') })),
+    el('td', { text: promoForPost(p) ? 'да' : '—' }),
+    el('td', {}, toggle(p.is_published, async (v) => {
+      const { error } = await sb.from('posts').update({ is_published: v, updated_at: new Date().toISOString() }).eq('id', p.id);
+      if (error) toast('Не сохранилось: ' + error.message, true); else { p.is_published = v; toast('Сохранено'); }
+    })),
+    el('td', { class: 'actions' }, el('button', { type: 'button', class: 'btn btn-small', text: 'Изменить', onclick: () => openPost(p) })),
+  )));
+}
+
+function setPostPreview(url) {
+  $('.js-post-image-preview').replaceChildren(url ? el('img', { src: url, alt: '' }) : el('span', { text: 'Нет обложки' }));
+  $('.js-post-image-remove').hidden = !url;
+}
+
+function openPost(p) {
+  state.editingPost = p;
+  state.pendingPostImage = undefined;
+  state.slugTouched = Boolean(p);
+  const form = $('.js-post-form');
+  form.reset();
+  $('.js-post-brand').replaceChildren(el('option', { value: '', text: '— без бренда —' }), ...state.brands.map((b) => el('option', { value: b.id, text: b.name })));
+  $('.js-post-title').textContent = p ? 'Редактировать статью' : 'Новая статья';
+  $('.js-delete-post').hidden = !p;
+  $('.js-post-msg').textContent = '';
+  const data = p ?? { is_published: true, published_on: todayIso(), tags: [] };
+  for (const input of form.elements) {
+    if (!input.name || input.name === 'in_carousel') continue;
+    if (input.type === 'checkbox') input.checked = Boolean(data[input.name]);
+    else if (input.name === 'tags') input.value = (data.tags || []).join(', ');
+    else input.value = data[input.name] ?? '';
+  }
+  form.elements.in_carousel.checked = Boolean(p && promoForPost(p));
+  $('.js-slug-preview').textContent = form.elements.slug.value || '…';
+  const view = $('.js-post-view');
+  view.hidden = !p;
+  if (p) view.href = `../blog/${p.slug}/`;
+  setPostPreview(p?.cover_url ?? null);
+  $('.js-post-dialog').showModal();
+}
+
+$('.js-add-post').addEventListener('click', () => openPost(null));
+$('.js-post-form').elements.title_ru.addEventListener('input', (e) => {
+  if (state.slugTouched) return;
+  const slug = postSlug(e.target.value);
+  $('.js-post-form').elements.slug.value = slug;
+  $('.js-slug-preview').textContent = slug || '…';
+});
+$('.js-post-slug').addEventListener('input', (e) => { state.slugTouched = true; $('.js-slug-preview').textContent = e.target.value || '…'; });
+$('.js-post-image-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  state.pendingPostImage = await shrinkImage(file, 2000);
+  setPostPreview(URL.createObjectURL(state.pendingPostImage));
+  e.target.value = '';
+});
+$('.js-post-image-remove').addEventListener('click', () => { state.pendingPostImage = null; setPostPreview(null); });
+
+$('.js-post-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const f = new FormData(form);
+  const p = state.editingPost;
+  const msg = $('.js-post-msg');
+  const str = (k) => emptyToNull(String(f.get(k) ?? '').trim());
+  const slug = str('slug');
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug || '')) { msg.textContent = 'Адрес: только латинские буквы, цифры и дефисы.'; return; }
+  if (state.posts.some((x) => x.slug === slug && x.id !== p?.id)) { msg.textContent = 'Статья с таким адресом уже есть.'; return; }
+  msg.textContent = 'Сохраняем…';
+  const row = {
+    slug, title_ru: str('title_ru'), title_ky: str('title_ky'), excerpt_ru: str('excerpt_ru'), excerpt_ky: str('excerpt_ky'),
+    body_ru: str('body_ru'), body_ky: str('body_ky'), brand_id: str('brand_id'), published_on: str('published_on'),
+    tags: String(f.get('tags') || '').split(',').map((x) => x.trim()).filter(Boolean),
+    is_published: form.elements.is_published.checked, updated_at: new Date().toISOString(),
+  };
+  let saved;
+  try {
+    const oldUrl = p?.cover_url ?? null;
+    if (state.pendingPostImage) row.cover_url = await uploadImage(state.pendingPostImage);
+    else if (state.pendingPostImage === null) row.cover_url = null;
+    const res = p ? await sb.from('posts').update(row).eq('id', p.id).select().single()
+      : await sb.from('posts').insert(row).select().single();
+    if (res.error) throw res.error;
+    saved = res.data;
+    if (state.pendingPostImage !== undefined && oldUrl) await removeStoredImage(oldUrl);
+    // «Показать в карусели»: one slide per story, linked by post_id
+    const slide = promoForPost(saved);
+    if (form.elements.in_carousel.checked && !slide) {
+      const ins = await sb.from('promos').insert({
+        title_ru: saved.title_ru, title_ky: saved.title_ky, text_ru: saved.excerpt_ru, text_ky: saved.excerpt_ky,
+        theme: 'ivory', post_id: saved.id, image_url: saved.cover_url, is_published: true,
+        sort_order: (state.promos.at(-1)?.sort_order ?? 0) + 10,
+      });
+      if (ins.error) throw ins.error;
+    } else if (!form.elements.in_carousel.checked && slide) {
+      const del = await sb.from('promos').delete().eq('id', slide.id);
+      if (del.error) throw del.error;
+    }
+  } catch (err) {
+    msg.textContent = 'Ошибка: ' + err.message;
+    return;
+  }
+  $('.js-post-dialog').close();
+  toast('Статья сохранена. На сайте — в течение часа.');
+  await loadAll();
+});
+
+$('.js-delete-post').addEventListener('click', async () => {
+  const p = state.editingPost;
+  if (!p) return;
+  const btn = $('.js-delete-post');
+  if (btn.dataset.confirm !== 'yes') {
+    btn.dataset.confirm = 'yes';
+    btn.textContent = 'Точно удалить?';
+    setTimeout(() => { btn.dataset.confirm = ''; btn.textContent = 'Удалить'; }, 4000);
+    return;
+  }
+  btn.dataset.confirm = '';
+  btn.textContent = 'Удалить';
+  const { error } = await sb.from('posts').delete().eq('id', p.id); // its carousel slide goes with it
+  if (error) { $('.js-post-msg').textContent = 'Ошибка: ' + error.message; return; }
+  await removeStoredImage(p.cover_url);
+  $('.js-post-dialog').close();
+  toast('Статья удалена');
+  await loadAll();
+});
+
+/* ---------- phone layout: label table cells with their column title ---------- */
+function labelCells(tbody) {
+  const heads = [...tbody.closest('table').querySelectorAll('thead th')].map((th) => th.textContent.trim());
+  for (const row of tbody.rows) [...row.cells].forEach((td, i) => { if (heads[i] && !td.dataset.label) td.dataset.label = heads[i]; });
+}
+$$('.table tbody').forEach((tb) => {
+  labelCells(tb);
+  new MutationObserver(() => labelCells(tb)).observe(tb, { childList: true });
 });
 
 /* ---------- stats ---------- */
