@@ -1,0 +1,15 @@
+# GitHub Pages builds this folder with Jekyll. Nothing here uses Jekyll
+# templates (the HTML has no front matter, so it is copied as is); this file
+# only keeps internal files off www.fabao.hair.
+exclude:
+  - README.md
+  - docs/
+  - supabase/
+  - scripts/
+  - data/
+  - package.json
+  - package-lock.json
+  - node_modules/
+  - .github/
+  - Gemfile
+  - Gemfile.lock
