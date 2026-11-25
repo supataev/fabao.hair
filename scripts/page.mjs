@@ -73,7 +73,7 @@ export function renderPage(ctx, sig) {
   const ig = R.igHandle(ctx);
   const year = new Date().getFullYear();
   const langLink = (l, label) => `<a href="${PATHS[l]}" hreflang="${l}" lang="${l}"${l === lang ? ' aria-current="page"' : ''}>${label}</a>`;
-  const bake = { lang, sig, data: ctx.data, images: ctx.images };
+  const bake = { lang, sig, data: ctx.data, images: ctx.images, brandLogos: ctx.brandLogos };
 
   return `<!DOCTYPE html>
 <html lang="${lang}">

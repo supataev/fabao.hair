@@ -8,7 +8,7 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 const bake = JSON.parse($('#bake-data').textContent);
-const ctx = { lang: bake.lang, data: bake.data, images: bake.images };
+const ctx = { lang: bake.lang, data: bake.data, images: bake.images, brandLogos: bake.brandLogos };
 let filter = 'all';
 
 // Statistics: one row per page view or click in the site_events table

@@ -87,6 +87,22 @@ async function buildImages(data) {
   return images;
 }
 
+// A brand shows its logo when assets/img/brands/<slug>.svg or .png exists;
+// otherwise its name is shown as text.
+async function findBrandLogos(data) {
+  const logos = {};
+  for (const b of data.brands) {
+    for (const ext of ['svg', 'png']) {
+      const rel = `assets/img/brands/${b.slug}.${ext}`;
+      if (!(await exists(join(root, rel)))) continue;
+      const meta = await sharp(join(root, rel)).metadata();
+      logos[b.slug] = { src: `/${rel}`, w: meta.width, h: meta.height };
+      break;
+    }
+  }
+  return logos;
+}
+
 async function writeIfChanged(rel, content) {
   const file = join(root, rel);
   const old = await readFile(file, 'utf8').catch(() => null);
@@ -102,13 +118,14 @@ if (!data.brands?.length || !data.settings || !Object.keys(data.settings).length
   throw new Error('Content looks empty; refusing to overwrite the site.');
 }
 const images = await buildImages(data);
+const brandLogos = await findBrandLogos(data);
 const sig = signature(data);
 const lastmod = [...data.brands, ...data.products]
   .map((r) => r.updated_at).filter(Boolean).sort().pop()?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
 
 const changed = [];
 for (const [lang, rel] of [['ru', 'index.html'], ['ky', 'ky/index.html']]) {
-  if (await writeIfChanged(rel, renderPage({ lang, data, images }, sig))) changed.push(rel);
+  if (await writeIfChanged(rel, renderPage({ lang, data, images, brandLogos }, sig))) changed.push(rel);
 }
 if (await writeIfChanged('sitemap.xml', renderSitemap(lastmod))) changed.push('sitemap.xml');
 console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${Object.keys(images).length} images.`);
