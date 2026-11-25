@@ -19,7 +19,7 @@ const TEXT_FIELDS = [
 ];
 
 let sb;
-const state = { brands: [], products: [], settings: {}, editingProduct: null, editingBrand: null, pendingImage: undefined };
+const state = { brands: [], products: [], settings: {}, promos: [], promosReady: true, editingProduct: null, editingBrand: null, editingPromo: null, pendingImage: undefined, pendingPromoImage: undefined };
 
 /* ---------- helpers ---------- */
 function show(screen) {
@@ -183,10 +183,15 @@ async function loadAll() {
   state.brands = brands.data;
   state.products = products.data;
   state.settings = Object.fromEntries(settings.data.map((r) => [r.key, r]));
+  // slides: separate, so the panel still works before the structure patch runs
+  const promos = await sb.from('promos').select('*').order('sort_order').order('created_at');
+  state.promosReady = !promos.error;
+  state.promos = promos.data ?? [];
   renderBrandOptions();
   renderProducts();
   renderBrands();
   renderTexts();
+  renderPromos();
 }
 
 /* ---------- products ---------- */
@@ -213,7 +218,7 @@ function renderProducts() {
   body.replaceChildren(...rows.map((p) => el('tr', {},
     el('td', { class: 'thumb' }, p.image_url ? el('img', { src: p.image_url, alt: '' }) : el('span', { class: 'noimg' })),
     el('td', {}, el('button', { type: 'button', class: 'row-link', text: p.name_ru, onclick: () => openProduct(p) }),
-      p.is_featured ? el('span', { class: 'tag', text: 'хит' }) : null),
+      p.is_featured ? el('span', { class: 'tag', text: '★ популярное' }) : null),
     el('td', { text: brandName(p.brand_id) }),
     el('td', { text: fmtPrice(p.price_kgs) }),
     el('td', {}, toggle(p.in_stock, (v) => quickUpdate(p, { in_stock: v }))),
@@ -387,7 +392,8 @@ function openBrand(b) {
   $('.js-brand-title').textContent = b ? 'Редактировать бренд' : 'Новый бренд';
   $('.js-delete-brand').hidden = !b;
   $('.js-brand-msg').textContent = '';
-  const data = b ?? { is_published: true, sort_order: (state.brands.at(-1)?.sort_order ?? 0) + 1 };
+  const data = { accent_color: '#1D5C40', ...(b ?? { is_published: true, sort_order: (state.brands.at(-1)?.sort_order ?? 0) + 1 }) };
+  if (!data.accent_color) data.accent_color = '#1D5C40';
   for (const input of form.elements) {
     if (!input.name) continue;
     if (input.type === 'checkbox') input.checked = Boolean(data[input.name]);
@@ -407,6 +413,13 @@ $('.js-brand-form').addEventListener('submit', async (e) => {
     country_ky: emptyToNull(f.get('country_ky').trim()),
     description_ru: emptyToNull(f.get('description_ru').trim()),
     description_ky: emptyToNull(f.get('description_ky').trim()),
+    tagline_ru: emptyToNull(f.get('tagline_ru').trim()),
+    tagline_ky: emptyToNull(f.get('tagline_ky').trim()),
+    story_ru: emptyToNull(f.get('story_ru').trim()),
+    story_ky: emptyToNull(f.get('story_ky').trim()),
+    features_ru: emptyToNull(f.get('features_ru').trim()),
+    features_ky: emptyToNull(f.get('features_ky').trim()),
+    accent_color: f.get('accent_color') || null,
     sort_order: Number(f.get('sort_order') || 0),
     is_published: form.elements.is_published.checked,
   };
@@ -469,6 +482,141 @@ $('.js-texts').addEventListener('submit', async (e) => {
 });
 
 /* ---------- dialogs ---------- */
+/* ---------- promos (slider) ---------- */
+const fmtDate = (d) => (d ? new Date(`${d}T00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : '');
+const todayIso = () => new Date().toISOString().slice(0, 10);
+
+function renderPromoLinks() {
+  const opts = [
+    ['/products/', 'Все товары'], ['/brands/', 'Все бренды'], ['whatsapp', 'Написать в WhatsApp'], ['/#wholesale', 'Опт'],
+    ...state.brands.flatMap((b) => [[`/brands/${b.slug}/`, `Страница ${b.name}`], [`/products/?brand=${b.slug}`, `Товары ${b.name}`]]),
+  ];
+  $('.js-promo-links').replaceChildren(...opts.map(([v, label]) => el('option', { value: v, label })));
+  $('.js-promo-brand').replaceChildren(el('option', { value: '', text: '— без логотипа —' }), ...state.brands.map((b) => el('option', { value: b.id, text: b.name })));
+}
+
+function renderPromos() {
+  const body = $('.js-promos');
+  if (!state.promosReady) {
+    body.replaceChildren(el('tr', {}, el('td', { class: 'empty', colspan: 6, text: 'Слайды заработают после запуска supabase/patches/2026-11-structure.sql в Supabase.' })));
+    $('.js-add-promo').disabled = true;
+    return;
+  }
+  $('.js-add-promo').disabled = false;
+  if (!state.promos.length) {
+    body.replaceChildren(el('tr', {}, el('td', { class: 'empty', colspan: 6, text: 'Слайдов пока нет. Нажмите «+ Добавить слайд».' })));
+    return;
+  }
+  body.replaceChildren(...state.promos.map((p) => {
+    const ended = p.ends_on && p.ends_on < todayIso();
+    const period = p.starts_on || p.ends_on ? `${fmtDate(p.starts_on) || '…'} — ${fmtDate(p.ends_on) || '…'}` : 'всегда';
+    return el('tr', {},
+      el('td', { class: 'thumb' }, p.image_url ? el('img', { class: 'promo-thumb', src: p.image_url, alt: '' }) : el('span', { class: 'noimg' })),
+      el('td', {}, el('button', { type: 'button', class: 'row-link', text: p.title_ru, onclick: () => openPromo(p) })),
+      el('td', {}, el('span', { class: `period${ended ? ' off' : ''}`, text: ended ? `${period} (закончилась)` : period })),
+      el('td', { text: String(p.sort_order) }),
+      el('td', {}, toggle(p.is_published, async (v) => {
+        const { error } = await sb.from('promos').update({ is_published: v, updated_at: new Date().toISOString() }).eq('id', p.id);
+        if (error) toast('Не сохранилось: ' + error.message, true); else { p.is_published = v; toast('Сохранено'); }
+      })),
+      el('td', { class: 'actions' }, el('button', { type: 'button', class: 'btn btn-small', text: 'Изменить', onclick: () => openPromo(p) })),
+    );
+  }));
+}
+
+function setPromoPreview(url) {
+  $('.js-promo-image-preview').replaceChildren(url ? el('img', { src: url, alt: '' }) : el('span', { text: 'Нет картинки' }));
+  $('.js-promo-image-remove').hidden = !url;
+}
+
+function openPromo(p) {
+  state.editingPromo = p;
+  state.pendingPromoImage = undefined;
+  const form = $('.js-promo-form');
+  form.reset();
+  renderPromoLinks();
+  $('.js-promo-title').textContent = p ? 'Редактировать слайд' : 'Новый слайд';
+  $('.js-delete-promo').hidden = !p;
+  $('.js-promo-msg').textContent = '';
+  const data = p ?? { is_published: true, theme: 'emerald', sort_order: (state.promos.at(-1)?.sort_order ?? 0) + 1 };
+  for (const input of form.elements) {
+    if (!input.name) continue;
+    if (input.type === 'checkbox') input.checked = Boolean(data[input.name]);
+    else input.value = data[input.name] ?? '';
+  }
+  setPromoPreview(p?.image_url ?? null);
+  $('.js-promo-dialog').showModal();
+}
+
+$('.js-add-promo').addEventListener('click', () => openPromo(null));
+$('.js-promo-image-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  state.pendingPromoImage = await shrinkImage(file);
+  setPromoPreview(URL.createObjectURL(state.pendingPromoImage));
+  e.target.value = '';
+});
+$('.js-promo-image-remove').addEventListener('click', () => { state.pendingPromoImage = null; setPromoPreview(null); });
+
+$('.js-promo-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const f = new FormData(form);
+  const p = state.editingPromo;
+  const msg = $('.js-promo-msg');
+  const str = (k) => emptyToNull(String(f.get(k) ?? '').trim());
+  const link = str('link');
+  if (link && !(link === 'whatsapp' || link.startsWith('/') || /^https:\/\//.test(link))) {
+    msg.textContent = 'Ссылка должна начинаться с / или https://, либо быть «whatsapp».';
+    return;
+  }
+  if (str('starts_on') && str('ends_on') && str('ends_on') < str('starts_on')) {
+    msg.textContent = 'Дата «до» раньше даты «с».';
+    return;
+  }
+  msg.textContent = 'Сохраняем…';
+  const row = {
+    title_ru: str('title_ru'), title_ky: str('title_ky'), text_ru: str('text_ru'), text_ky: str('text_ky'),
+    cta_ru: str('cta_ru'), cta_ky: str('cta_ky'), link, theme: f.get('theme'), brand_id: str('brand_id'),
+    starts_on: str('starts_on'), ends_on: str('ends_on'), sort_order: Number(f.get('sort_order') || 0),
+    is_published: form.elements.is_published.checked, updated_at: new Date().toISOString(),
+  };
+  try {
+    const oldUrl = p?.image_url ?? null;
+    if (state.pendingPromoImage) row.image_url = await uploadImage(state.pendingPromoImage);
+    else if (state.pendingPromoImage === null) row.image_url = null;
+    const { error } = p ? await sb.from('promos').update(row).eq('id', p.id) : await sb.from('promos').insert(row);
+    if (error) throw error;
+    if (state.pendingPromoImage !== undefined && oldUrl) await removeStoredImage(oldUrl);
+  } catch (err) {
+    msg.textContent = 'Ошибка: ' + err.message;
+    return;
+  }
+  $('.js-promo-dialog').close();
+  toast('Слайд сохранён');
+  await loadAll();
+});
+
+$('.js-delete-promo').addEventListener('click', async () => {
+  const p = state.editingPromo;
+  if (!p) return;
+  const btn = $('.js-delete-promo');
+  if (btn.dataset.confirm !== 'yes') {
+    btn.dataset.confirm = 'yes';
+    btn.textContent = 'Точно удалить?';
+    setTimeout(() => { btn.dataset.confirm = ''; btn.textContent = 'Удалить'; }, 4000);
+    return;
+  }
+  btn.dataset.confirm = '';
+  btn.textContent = 'Удалить';
+  const { error } = await sb.from('promos').delete().eq('id', p.id);
+  if (error) { $('.js-promo-msg').textContent = 'Ошибка: ' + error.message; return; }
+  await removeStoredImage(p.image_url);
+  $('.js-promo-dialog').close();
+  toast('Слайд удалён');
+  await loadAll();
+});
+
 /* ---------- stats ---------- */
 const WA_EVENTS = ['consult', 'order', 'wholesale'];
 

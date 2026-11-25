@@ -63,6 +63,7 @@
         <button type="button" role="tab" data-tab="products" aria-selected="true">Товары</button>
         <button type="button" role="tab" data-tab="brands">Бренды</button>
         <button type="button" role="tab" data-tab="texts">Тексты сайта</button>
+        <button type="button" role="tab" data-tab="promos">Акции</button>
         <button type="button" role="tab" data-tab="stats">Статистика</button>
       </nav>
       <div class="topbar-right">
@@ -112,6 +113,21 @@
           </div>
           <div class="texts-grid js-texts-fields"></div>
         </form>
+      </div>
+
+      <!-- Promos (slider) -->
+      <div class="panel js-tab" data-tab="promos" hidden>
+        <div class="toolbar">
+          <h2>Акции и слайды</h2>
+          <button class="btn btn-primary js-add-promo" type="button">+ Добавить слайд</button>
+        </div>
+        <p class="hint">Слайды в карусели под меню на главной: акции, скидки, новинки, события. Показываются по порядку; можно задать даты начала и конца.</p>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th></th><th>Заголовок</th><th>Период</th><th>Порядок</th><th>На сайте</th><th></th></tr></thead>
+            <tbody class="js-promos"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Stats -->
@@ -177,13 +193,63 @@
           <div class="checks">
             <label class="check"><input type="checkbox" name="in_stock"> В наличии</label>
             <label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label>
-            <label class="check"><input type="checkbox" name="is_featured"> Хит / рекомендуем</label>
+            <label class="check"><input type="checkbox" name="is_featured"> ★ Популярное — показывать на главной</label>
           </div>
         </div>
       </div>
       <footer class="drawer-foot">
         <button class="btn btn-danger js-delete-product" type="button">Удалить</button>
         <span class="msg js-product-msg" role="status"></span>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Promo editor -->
+  <dialog class="drawer js-promo-dialog">
+    <form class="drawer-form js-promo-form" method="dialog">
+      <header class="drawer-head">
+        <h2 class="js-promo-title">Слайд</h2>
+        <button class="icon-btn js-close" type="button" aria-label="Закрыть">×</button>
+      </header>
+      <div class="drawer-body">
+        <div class="image-field">
+          <div class="image-preview js-promo-image-preview"></div>
+          <div>
+            <label class="btn btn-small file-btn">Загрузить картинку<input type="file" accept="image/*" class="js-promo-image-input" hidden></label>
+            <button type="button" class="btn-link js-promo-image-remove">Убрать картинку</button>
+            <p class="hint">Фото товара или баннер. Лучше квадратное или горизонтальное, на светлом фоне.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <label>Заголовок (RU) *<input name="title_ru" required maxlength="90"></label>
+          <label>Заголовок (KG)<input name="title_ky" maxlength="90"></label>
+        </div>
+        <label>Текст (RU)<textarea name="text_ru" rows="3" maxlength="220"></textarea></label>
+        <label>Текст (KG)<textarea name="text_ky" rows="3" maxlength="220"></textarea></label>
+        <div class="grid-2">
+          <label>Кнопка (RU)<input name="cta_ru" maxlength="40" placeholder="например, Смотреть"></label>
+          <label>Кнопка (KG)<input name="cta_ky" maxlength="40"></label>
+        </div>
+        <label>Куда ведёт кнопка<input name="link" list="promo-links" placeholder="/products/ или whatsapp"><span class="hint">Выберите из списка или вставьте ссылку https://…  Пусто — без кнопки.</span></label>
+        <datalist id="promo-links" class="js-promo-links"></datalist>
+        <div class="grid-2">
+          <label>Оформление<select name="theme">
+            <option value="emerald">Зелёный (Fabao)</option>
+            <option value="ivory">Светлый</option>
+            <option value="gold">Золотой</option>
+            <option value="brand">В цвет бренда</option>
+          </select></label>
+          <label>Бренд (логотип на слайде)<select name="brand_id" class="js-promo-brand"></select></label>
+          <label>Показывать с<input name="starts_on" type="date"></label>
+          <label>Показывать до<input name="ends_on" type="date"></label>
+          <label>Порядок<input name="sort_order" type="number" step="1"></label>
+          <div class="checks"><label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label></div>
+        </div>
+      </div>
+      <footer class="drawer-foot">
+        <button class="btn btn-danger js-delete-promo" type="button">Удалить</button>
+        <span class="msg js-promo-msg" role="status"></span>
         <button class="btn btn-primary" type="submit">Сохранить</button>
       </footer>
     </form>
@@ -203,8 +269,18 @@
           <label>Страна (RU)<input name="country_ru"></label>
           <label>Страна (KG)<input name="country_ky"></label>
         </div>
-        <label>Описание (RU)<textarea name="description_ru" rows="4"></textarea></label>
-        <label>Описание (KG)<textarea name="description_ky" rows="4"></textarea></label>
+        <label>Короткое описание (RU)<textarea name="description_ru" rows="3"></textarea></label>
+        <label>Короткое описание (KG)<textarea name="description_ky" rows="3"></textarea></label>
+        <h3 class="form-section">Страница бренда</h3>
+        <div class="grid-2">
+          <label>Слоган (RU)<input name="tagline_ru" maxlength="160"></label>
+          <label>Слоган (KG)<input name="tagline_ky" maxlength="160"></label>
+        </div>
+        <label>О бренде (RU)<textarea name="story_ru" rows="6"></textarea><span class="hint">Абзацы разделяйте пустой строкой.</span></label>
+        <label>О бренде (KG)<textarea name="story_ky" rows="6"></textarea></label>
+        <label>Чем особенный (RU)<textarea name="features_ru" rows="5" placeholder="С 1974 года — один из самых известных брендов…"></textarea><span class="hint">По одному пункту на строку: «Заголовок — текст». Лучше 3–4 пункта.</span></label>
+        <label>Чем особенный (KG)<textarea name="features_ky" rows="5"></textarea></label>
+        <label class="color-field">Цвет бренда<input name="accent_color" type="color" value="#1D5C40"><span class="hint">Цвет кнопок и иконок на странице бренда — возьмите из логотипа.</span></label>
         <label class="check"><input type="checkbox" name="is_published"> Показывать на сайте</label>
       </div>
       <footer class="drawer-foot">

@@ -127,3 +127,10 @@ textarea { resize: vertical; }
 .stats-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
 .table td.num, .table th.num { text-align: right; }
 @media (max-width: 800px) { .stats-cols { grid-template-columns: 1fr; } }
+
+/* v2: brand page fields, promos */
+.form-section { margin: 12px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: 1rem; }
+.color-field input[type="color"] { width: 64px; height: 40px; padding: 2px; }
+.promo-thumb { width: 64px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--line); display: block; }
+.period { white-space: nowrap; color: var(--mute); font-size: .85rem; }
+.period.off { color: #8A3B2A; }
