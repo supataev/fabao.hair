@@ -2,6 +2,11 @@
 // Kyrgyz translations should be checked by a native speaker.
 export const STRINGS = {
   ru: {
+    meta_title: 'Fabao — оригинальный уход против выпадения волос · Бишкек',
+    meta_description: 'Официальный дистрибьютор ZhangGuang 101, DekoHair и Follicell в Кыргызстане. Тоник 101B, шампуни, пептидный уход. Доставка по Бишкеку и регионам.',
+    og_title: 'Fabao — уход против выпадения волос', og_description: 'Официальный дистрибьютор ZhangGuang 101, DekoHair и Follicell в Кыргызстане.',
+    og_image_alt: 'Fabao: уход против выпадения волос, Бишкек',
+    skip_link: 'Перейти к содержимому', nav_label: 'Разделы сайта', lang_label: 'Язык', filter_label: 'Бренд',
     nav_catalog: 'Каталог', nav_brands: 'Бренды', nav_delivery: 'Доставка', nav_wholesale: 'Опт', nav_contacts: 'Контакты',
     cta_catalog: 'Смотреть каталог', cta_consult: 'Консультация в WhatsApp',
     eyebrow_official: 'Официальный дистрибьютор в Кыргызстане',
@@ -28,6 +33,11 @@ export const STRINGS = {
     cat: { tonic: 'Тоник', shampoo: 'Шампунь', mask: 'Маска', serum: 'Сыворотка', conditioner: 'Кондиционер', care: 'Уход', supplement: 'Добавки', set: 'Набор', other: 'Другое' },
   },
   ky: {
+    meta_title: 'Fabao — чач түшүүгө каршы оригиналдуу кам көрүү · Бишкек',
+    meta_description: 'ZhangGuang 101, DekoHair жана Follicell брендеринин Кыргызстандагы расмий дистрибьютору. 101B тоники, шампундар, пептиддик кам көрүү. Бишкек жана аймактар боюнча жеткирүү.',
+    og_title: 'Fabao — чач түшүүгө каршы кам көрүү', og_description: 'ZhangGuang 101, DekoHair жана Follicell брендеринин Кыргызстандагы расмий дистрибьютору.',
+    og_image_alt: 'Fabao: чач түшүүгө каршы кам көрүү, Бишкек',
+    skip_link: 'Мазмунга өтүү', nav_label: 'Сайттын бөлүмдөрү', lang_label: 'Тил', filter_label: 'Бренд',
     nav_catalog: 'Каталог', nav_brands: 'Бренддер', nav_delivery: 'Жеткирүү', nav_wholesale: 'Дүң', nav_contacts: 'Байланыш',
     cta_catalog: 'Каталогду көрүү', cta_consult: 'WhatsApp аркылуу кеңеш алуу',
     eyebrow_official: 'Кыргызстандагы расмий дистрибьютор',
