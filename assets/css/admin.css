@@ -1,10 +1,10 @@
 :root {
-  --emerald: #0F4A37;
-  --emerald-deep: #0A3628;
-  --emerald-soft: #E3ECE6;
-  --ivory: #F3EEE3;
+  --emerald: #1D5C40;
+  --emerald-deep: #123D2B;
+  --emerald-soft: #E5EDE7;
+  --ivory: #FAF6EE;
   --paper: #F6F5F1;
-  --gold: #B8955A;
+  --gold: #C6A15B;
   --ink: #14231D;
   --mute: #5E6B64;
   --line: rgba(20, 35, 29, 0.14);
@@ -28,7 +28,7 @@ code { background: var(--emerald-soft); padding: .1em .4em; border-radius: 4px; 
 
 label { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--mute); }
 input, select, textarea { font: inherit; color: var(--ink); padding: .6em .75em; border: 1px solid var(--line); border-radius: 10px; background: #fff; width: 100%; }
-input:focus, select:focus, textarea:focus { outline: 2px solid rgba(15, 74, 55, .35); border-color: var(--emerald); }
+input:focus, select:focus, textarea:focus { outline: 2px solid rgba(29, 92, 64, .35); border-color: var(--emerald); }
 textarea { resize: vertical; }
 
 .btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: #fff; color: var(--ink); padding: .6em 1.1em; border-radius: 10px; cursor: pointer; white-space: nowrap; }
@@ -75,7 +75,7 @@ textarea { resize: vertical; }
 .switch span::after { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
 .switch input:checked + span { background: var(--emerald); }
 .switch input:checked + span::after { transform: translateX(18px); }
-.switch input:focus-visible + span { outline: 2px solid rgba(15, 74, 55, .4); outline-offset: 2px; }
+.switch input:focus-visible + span { outline: 2px solid rgba(29, 92, 64, .4); outline-offset: 2px; }
 
 /* Drawer dialog */
 .drawer { border: 0; padding: 0; margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(640px, 100%); background: #fff; }
