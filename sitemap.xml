@@ -12,4 +12,64 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/"/>
   </url>
+  <url>
+    <loc>https://www.fabao.hair/brands/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/brands/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/brands/zhangguang-101/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/zhangguang-101/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/zhangguang-101/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/brands/zhangguang-101/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/zhangguang-101/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/zhangguang-101/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/brands/dekohair/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/dekohair/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/dekohair/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/brands/dekohair/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/dekohair/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/dekohair/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/brands/follicell/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/follicell/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/follicell/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/brands/follicell/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/brands/follicell/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/follicell/"/>
+  </url>
 </urlset>

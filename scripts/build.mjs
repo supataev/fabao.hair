@@ -6,7 +6,8 @@
 //   node scripts/build.mjs --data f.json   use a saved snapshot instead of the database
 //   node scripts/build.mjs --root dir      write into another folder (previews)
 //
-// Writes: index.html (ru), ky/index.html (ky), sitemap.xml, assets/img/p/* (AVIF + WebP).
+// Writes every page in ru (/) and ky (/ky/): home, brands/, brands/<slug>/,
+// products/; plus sitemap.xml and assets/img/p/* (AVIF + WebP).
 // The output only changes when the content changes, so the scheduled GitHub
 // Action commits nothing on quiet days.
 import { createHash } from 'node:crypto';
@@ -15,8 +16,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../assets/js/config.js';
-import { normalize, signature, QUERIES } from '../assets/js/render.js';
-import { renderPage, renderSitemap } from './page.mjs';
+import { normalize, normalizePopularity, signature, rankProducts, rankBrands, QUERIES } from '../assets/js/render.js';
+import { renderSite, pagePaths, renderSitemap } from './page.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -32,14 +33,22 @@ async function fromDatabase() {
     if (!res.ok) throw new Error(`${q}: HTTP ${res.status}`);
     return res.json();
   };
-  const [brands, products, settings] = await Promise.all([get(QUERIES.brands), get(QUERIES.products), get(QUERIES.settings)]);
-  return normalize(brands, products, settings);
+  // optional parts: until supabase/patches/2026-11-structure.sql runs they don't exist
+  const optional = (p) => p.catch((e) => { console.warn(`! ${e.message} (skipped)`); return []; });
+  const [brands, products, settings, promos] = await Promise.all([
+    get(QUERIES.brands), get(QUERIES.products), get(QUERIES.settings), optional(get(QUERIES.promos))]);
+  const popRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/catalog_popularity`, {
+    method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: '{"days":60}' });
+  const popularity = popRes.ok ? normalizePopularity(await popRes.json()) : (console.warn(`! popularity: HTTP ${popRes.status} (skipped)`), normalizePopularity());
+  return { data: normalize(brands, products, settings, promos), popularity };
 }
 
 async function fromFile(file) {
   const raw = JSON.parse(await readFile(file, 'utf8'));
-  if (Array.isArray(raw.site_settings)) return normalize(raw.brands, raw.products, raw.site_settings);
-  return { brands: raw.brands, products: raw.products, settings: raw.settings };
+  const data = Array.isArray(raw.site_settings)
+    ? normalize(raw.brands, raw.products, raw.site_settings, raw.promos || [])
+    : { brands: raw.brands, products: raw.products, settings: raw.settings, promos: raw.promos || [] };
+  return { data, popularity: normalizePopularity(raw.popularity || []) };
 }
 
 async function readSource(url) {
@@ -56,7 +65,11 @@ async function buildImages(data) {
   const images = {};
   const keep = new Set();
   await mkdir(join(root, IMG_DIR), { recursive: true });
-  const urls = [...new Set(data.products.map((p) => p.image_url).filter(Boolean))];
+  const urls = [...new Set([
+    ...data.products.map((p) => p.image_url),
+    ...(data.promos || []).map((p) => p.image_url),
+    ...data.brands.map((b) => b.cover_url),
+  ].filter(Boolean))];
   for (const url of urls) {
     let buf;
     try { buf = await readSource(url); } catch (e) { console.warn(`! skipped ${e.message}`); continue; }
@@ -112,21 +125,41 @@ async function writeIfChanged(rel, content) {
   return true;
 }
 
+// Popularity goes into the pages as RANKS, not raw scores: the pages then only
+// change when the order changes, not after every visitor click.
+function toRanks(base, raw) {
+  const ctx = { ...base, popularity: raw };
+  const ranks = (list) => Object.fromEntries(list.map((x, i) => [x.id, list.length - i]));
+  const unfeatured = { ...ctx, data: { ...ctx.data, products: ctx.data.products.map((p) => ({ ...p, is_featured: false, in_stock: true })) } };
+  return { products: ranks(rankProducts(unfeatured)), brands: ranks(rankBrands(ctx)) };
+}
+
+// Remove pages of brands that no longer exist.
+async function removeStaleBrandPages(data) {
+  const keep = new Set(data.brands.map((b) => b.slug));
+  for (const dir of ['brands', 'ky/brands']) {
+    const entries = await readdir(join(root, dir), { withFileTypes: true }).catch(() => []);
+    for (const e of entries) if (e.isDirectory() && !keep.has(e.name)) await rm(join(root, dir, e.name), { recursive: true });
+  }
+}
+
 const dataFile = arg('--data');
-const data = dataFile ? await fromFile(resolve(dataFile)) : await fromDatabase();
+const { data, popularity: rawPopularity } = dataFile ? await fromFile(resolve(dataFile)) : await fromDatabase();
 if (!data.brands?.length || !data.settings || !Object.keys(data.settings).length) {
   throw new Error('Content looks empty; refusing to overwrite the site.');
 }
 const images = await buildImages(data);
 const brandLogos = await findBrandLogos(data);
 const sig = signature(data);
-const lastmod = [...data.brands, ...data.products]
+const popularity = toRanks({ data }, rawPopularity);
+const lastmod = [...data.brands, ...data.products, ...(data.promos || [])]
   .map((r) => r.updated_at).filter(Boolean).sort().pop()?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
 
 const changed = [];
-for (const [lang, rel] of [['ru', 'index.html'], ['ky', 'ky/index.html']]) {
-  if (await writeIfChanged(rel, renderPage({ lang, data, images, brandLogos }, sig))) changed.push(rel);
+for (const [rel, html] of renderSite({ data, images, brandLogos, popularity, sig })) {
+  if (await writeIfChanged(rel, html)) changed.push(rel);
 }
-if (await writeIfChanged('sitemap.xml', renderSitemap(lastmod))) changed.push('sitemap.xml');
-console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${Object.keys(images).length} images.`);
-console.log(changed.length ? `Changed: ${changed.join(', ')}` : 'No changes.');
+await removeStaleBrandPages(data);
+if (await writeIfChanged('sitemap.xml', renderSitemap(pagePaths(data), lastmod))) changed.push('sitemap.xml');
+console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${(data.promos || []).length} slides, ${Object.keys(images).length} images.`);
+console.log(changed.length ? `Changed (${changed.length}): ${changed.join(', ')}` : 'No changes.');
