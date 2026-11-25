@@ -60,13 +60,15 @@ const brandLine = (ctx, p) => {
 
 // Brand logos live in assets/img/brands/<slug>.svg|png (see scripts/build.mjs).
 const brandLogo = (ctx, b) => ctx.brandLogos?.[b.slug];
+// wide wordmarks are drawn shorter so they look as heavy as compact logos
+const wideLogo = (logo) => logo.w / logo.h > 3;
 
 export function heroBrands(ctx) {
   return ctx.data.brands.map((b) => {
     const logo = brandLogo(ctx, b);
     if (!logo) return `<li>${esc(b.name)}</li>`;
     // drawn as a mask so it takes the panel's gold colour
-    return `<li class="hero-brand-logo"><span style="--logo:url('${esc(logo.src)}');aspect-ratio:${logo.w}/${logo.h}"></span><span class="visually-hidden">${esc(b.name)}</span></li>`;
+    return `<li class="hero-brand-logo${wideLogo(logo) ? ' is-wide' : ''}"><span style="--logo:url('${esc(logo.src)}');aspect-ratio:${logo.w}/${logo.h}"></span><span class="visually-hidden">${esc(b.name)}</span></li>`;
   }).join('');
 }
 
@@ -75,7 +77,7 @@ export function brandCards(ctx) {
   return ctx.data.brands.map((b) => `<article class="brand-card">`
     + `<p class="brand-country">${esc(loc(lang, b, 'country'))}</p>`
     + (brandLogo(ctx, b)
-      ? `<h3 class="brand-logo"><img src="${esc(brandLogo(ctx, b).src)}" width="${brandLogo(ctx, b).w}" height="${brandLogo(ctx, b).h}" alt="${esc(b.name)}" loading="lazy" decoding="async"></h3>`
+      ? `<h3 class="brand-logo${wideLogo(brandLogo(ctx, b)) ? ' is-wide' : ''}"><img src="${esc(brandLogo(ctx, b).src)}" width="${brandLogo(ctx, b).w}" height="${brandLogo(ctx, b).h}" alt="${esc(b.name)}" loading="lazy" decoding="async"></h3>`
       : `<h3>${esc(b.name)}</h3>`)
     + `<p>${esc(loc(lang, b, 'description'))}</p>`
     + `<a class="link-arrow" href="#catalog" data-brand="${esc(b.id)}">${esc(t(lang, 'brand_see'))}</a>`
