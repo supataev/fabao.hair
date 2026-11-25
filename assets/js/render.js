@@ -32,6 +32,41 @@ export const hasPrice = (p) => p.price_kgs != null && p.price_kgs !== '';
 export const path = (lang, p) => (lang === 'ky' ? '/ky' : '') + p;
 export const brandUrl = (ctx, b) => path(ctx.lang, `/brands/${b.slug}/`);
 export const productsUrl = (ctx, query = '') => path(ctx.lang, `/products/${query}`);
+
+/* ---------- SEO addresses ---------- */
+const TRANSLIT = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', ө: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ү: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya', ң: 'n' };
+export const slugify = (text) => String(text || '').toLowerCase().split('').map((ch) => TRANSLIT[ch] ?? ch).join('')
+  .normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70);
+
+// Product addresses come from the Russian name (stable unless the name changes);
+// duplicates get -2, -3 … in catalogue order.
+export function productSlugs(products) {
+  const seen = {};
+  const out = {};
+  for (const p of products) {
+    let base = p.slug || slugify(p.name_ru) || `product-${String(p.id).slice(0, 8)}`;
+    let slug = base;
+    for (let n = 2; seen[slug]; n += 1) slug = `${base}-${n}`;
+    seen[slug] = true;
+    out[p.id] = slug;
+  }
+  return out;
+}
+const slugOf = (ctx, p) => (ctx.productSlugs || (ctx.productSlugs = productSlugs(ctx.data.products)))[p.id];
+export const productUrl = (ctx, p) => path(ctx.lang, `/products/${slugOf(ctx, p)}/`);
+export const productSlug = (ctx, p) => slugOf(ctx, p);
+
+export const CATEGORY_SLUGS = { tonic: 'toniki', shampoo: 'shampuni', mask: 'maski', serum: 'syvorotki', conditioner: 'kondicionery', care: 'uhod', supplement: 'bady', set: 'nabory', other: 'drugoe' };
+export const categoryUrl = (ctx, cat) => path(ctx.lang, `/catalog/${CATEGORY_SLUGS[cat] || cat}/`);
+// Category landing-page texts (title, h1, intro, description) from i18n.js
+export function catSeo(lang, cat) {
+  const own = STRINGS[lang]?.cat_seo?.[cat] || STRINGS.ru.cat_seo?.[cat];
+  if (own) return own;
+  const name = STRINGS[lang].cat[cat] || cat;
+  const d = STRINGS[lang].cat_seo_default;
+  return Object.fromEntries(Object.entries(d).map(([k, v]) => [k, v.replace('{cat}', name)]));
+}
+export const presentCategories = (ctx) => Object.keys(CATEGORY_SLUGS).filter((c) => ctx.data.products.some((p) => p.category === c));
 export const brandOf = (ctx, p) => ctx.data.brands.find((b) => b.id === p.brand_id);
 
 // Slide links: '/…' (site path, localized), 'whatsapp', or a full https:// URL.
@@ -206,7 +241,7 @@ export function productCard(ctx, p) {
     + `<button type="button" class="product-open" data-product="${esc(p.id)}" aria-label="${esc(`${t(lang, 'details')}: ${name}`)}" tabindex="-1">${productImage(ctx, p, 'product-img', 'card')}${p.is_featured ? `<span class="badge">${esc(t(lang, 'badge_hit'))}</span>` : ''}</button>`
     + `<div class="product-info">`
     + `<p class="product-brand">${brandLine(ctx, p)}</p>`
-    + `<h3><button type="button" class="product-title" data-product="${esc(p.id)}">${esc(name)}</button></h3>`
+    + `<h3><a class="product-title" href="${productUrl(ctx, p)}">${esc(name)}</a></h3>`
     + (desc ? `<p class="product-desc">${esc(desc)}</p>` : '')
     + `<div class="product-meta">`
     + `<span class="price">${esc(formatPrice(lang, p.price_kgs))}</span>`
@@ -219,6 +254,33 @@ export function productCard(ctx, p) {
 export const productCards = (ctx, list) => (list.length
   ? list.map((p) => productCard(ctx, p)).join('')
   : `<p class="empty">${esc(t(ctx.lang, 'empty_catalog'))}</p>`);
+
+// Product page: photo, facts, price, cart button, description, how to use.
+export function productMain(ctx, p) {
+  const { lang } = ctx;
+  const name = loc(lang, p, 'name');
+  const usage = loc(lang, p, 'usage');
+  const b = brandOf(ctx, p);
+  const cat = STRINGS[lang].cat[p.category];
+  return `<div class="product-page-grid">`
+    + `<div class="product-page-img">${p.image_url ? picture(ctx, p.image_url, name, 'modal', true) : '<span class="wordmark"></span>'}</div>`
+    + `<div class="product-page-text">`
+    + `<p class="product-brand">${brandLine(ctx, p)}</p>`
+    + `<h1>${esc(name)}</h1>`
+    + `<div class="product-page-buy"><span class="price">${esc(formatPrice(lang, p.price_kgs))}</span>`
+    + `<span class="stock ${p.in_stock ? 'ok' : 'no'}">${esc(p.in_stock ? t(lang, 'in_stock') : t(lang, 'out_of_stock'))}</span></div>`
+    + `<div class="modal-actions">${addButton(ctx, p, '')}`
+    + `<a class="btn btn-line js-wa-consult" href="${esc(waLink(ctx, t(lang, 'wa_order_msg') + name))}" target="_blank" rel="noopener" data-track="order" data-label="${esc(name)}">WhatsApp</a></div>`
+    + `<dl class="product-facts">`
+    + (b ? `<div><dt>${esc(t(lang, 'fact_brand'))}</dt><dd><a href="${brandUrl(ctx, b)}">${esc(b.name)}</a></dd></div>` : '')
+    + (cat ? `<div><dt>${esc(t(lang, 'fact_category'))}</dt><dd><a href="${categoryUrl(ctx, p.category)}">${esc(cat)}</a></dd></div>` : '')
+    + (p.volume ? `<div><dt>${esc(t(lang, 'fact_volume'))}</dt><dd>${esc(p.volume)}</dd></div>` : '')
+    + (b && loc(lang, b, 'country') ? `<div><dt>${esc(t(lang, 'fact_country'))}</dt><dd>${esc(loc(lang, b, 'country'))}</dd></div>` : '')
+    + `</dl>`
+    + `<h2>${esc(t(lang, 'product_about'))}</h2><p class="pre">${esc(loc(lang, p, 'description'))}</p>`
+    + (usage ? `<h2>${esc(t(lang, 'how_to_use'))}</h2><p class="pre">${esc(usage)}</p>` : '')
+    + `</div></div>`;
+}
 
 export function productModal(ctx, p) {
   const { lang } = ctx;
@@ -233,7 +295,7 @@ export function productModal(ctx, p) {
     + `<p class="price">${esc(formatPrice(lang, p.price_kgs))}</p>`
     + `<p class="pre">${esc(loc(lang, p, 'description'))}</p>`
     + (usage ? `<h4>${esc(t(lang, 'how_to_use'))}</h4><p class="pre">${esc(usage)}</p>` : '')
-    + `<div class="modal-actions">${addButton(ctx, p, '')}`
+    + `<div class="modal-actions">${addButton(ctx, p, '')}<a class="link-arrow" href="${productUrl(ctx, p)}">${esc(t(lang, 'product_page_link'))}</a>`
     + (b ? `<a class="link-arrow" href="${brandUrl(ctx, b)}">${esc(t(lang, 'about_brand'))} ${esc(b.name)}</a>` : '')
     + `</div></div>`;
 }

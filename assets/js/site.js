@@ -339,6 +339,12 @@ const RENDERERS = {
   'blog-list': () => R.postCards(ctx, R.publishedPosts(ctx)),
   // story page (by id, so a renamed address still updates); null = leave as baked
   'post-head': () => { const p = currentPost(); return p ? R.postHead(ctx, p) : null; },
+  // product and category pages: price, stock and texts follow the database
+  'product-main': () => { const p = bake.product && productById(bake.product); return p ? R.productMain(ctx, p) : null; },
+  category: () => {
+    const cat = $('[data-r="category"]')?.dataset.cat;
+    return cat ? R.productCards(ctx, R.rankProducts(ctx, ctx.data.products.filter((p) => p.category === cat))) : null;
+  },
   'post-body': () => { const p = currentPost(); return p ? R.postBody(ctx, p) : null; },
   'post-more': () => R.postCards(ctx, R.publishedPosts(ctx).filter((p) => p.id !== bake.post).slice(0, 3)),
   'brand-posts': () => {
@@ -387,6 +393,7 @@ async function refresh() {
     const data = R.normalize(brands, products, settings, promos, posts);
     if (R.signature(data) === bake.sig) return;
     ctx.data = data;
+    ctx.productSlugs = null; // new or renamed products get their addresses again
     rerender();
   } catch {
     // keep the baked content

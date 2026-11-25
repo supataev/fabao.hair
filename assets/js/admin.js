@@ -16,6 +16,10 @@ const TEXT_FIELDS = [
   { key: 'hours', label: 'Часы работы (пусто = не показывать)' },
   { key: 'whatsapp', label: 'Номер WhatsApp (только цифры, с 996)', single: true },
   { key: 'instagram', label: 'Instagram (без @)', single: true },
+  // SEO: tell Google which pages elsewhere are Fabao, and verify the site
+  { key: 'same_as', label: 'Fabao в интернете: ссылки на 2ГИС, Google Maps, Яндекс Карты, Facebook… (каждая с новой строки, https://)', single: true, long: true },
+  { key: 'google_site_verification', label: 'Google Search Console — код подтверждения (содержимое content из meta-тега)', single: true },
+  { key: 'yandex_verification', label: 'Яндекс Вебмастер — код подтверждения (содержимое content из meta-тега)', single: true },
 ];
 
 let sb;

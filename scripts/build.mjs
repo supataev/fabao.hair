@@ -16,7 +16,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../assets/js/config.js';
-import { normalize, normalizePopularity, signature, rankProducts, rankBrands, QUERIES } from '../assets/js/render.js';
+import { normalize, normalizePopularity, signature, rankProducts, rankBrands, productSlugs, CATEGORY_SLUGS, QUERIES } from '../assets/js/render.js';
 import { renderSite, pagePaths, renderSitemap } from './page.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -147,6 +147,8 @@ async function removeStaleBrandPages(data) {
   const groups = [
     [['brands', 'ky/brands'], new Set(data.brands.map((x) => x.slug))],
     [['blog', 'ky/blog'], new Set((data.posts || []).filter((p) => !p.published_on || p.published_on <= today).map((p) => p.slug))],
+    [['products', 'ky/products'], new Set(Object.values(productSlugs(data.products)))],
+    [['catalog', 'ky/catalog'], new Set(Object.entries(CATEGORY_SLUGS).filter(([c]) => data.products.some((p) => p.category === c)).map(([, s]) => s))],
   ];
   for (const [dirs, keep] of groups) {
     for (const dir of dirs) {
@@ -179,6 +181,6 @@ for (const [rel, html] of renderSite({ data, images, brandLogos, popularity, sig
   if (await writeIfChanged(rel, html)) changed.push(rel);
 }
 await removeStaleBrandPages(data);
-if (await writeIfChanged('sitemap.xml', renderSitemap(pagePaths(data), lastmod))) changed.push('sitemap.xml');
+if (await writeIfChanged('sitemap.xml', renderSitemap(pagePaths(data, images), lastmod))) changed.push('sitemap.xml');
 console.log(`Baked ${data.brands.length} brands, ${data.products.length} products, ${(data.promos || []).length} slides, ${(data.posts || []).length} posts, ${Object.keys(images).length} images.`);
 console.log(changed.length ? `Changed (${changed.length}): ${changed.join(', ')}` : 'No changes.');

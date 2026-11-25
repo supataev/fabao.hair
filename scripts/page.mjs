@@ -12,38 +12,44 @@ const fill = (s, vars) => s.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
 /* ---------- structured data ---------- */
 function storeLd(ctx) {
   return {
-    '@type': 'Store',
+    '@type': ['Store', 'HealthAndBeautyBusiness'],
     '@id': `${SITE}/#store`,
     name: 'Fabao',
+    alternateName: ['Фабао', 'Fabao KG', 'Fabao Kyrgyzstan', 'Fabao Бишкек', 'fabao.hair'],
     url: `${SITE}/`,
-    logo: `${SITE}/assets/img/apple-touch-icon.png`,
+    logo: { '@type': 'ImageObject', url: `${SITE}/assets/img/logo-512.png`, width: 512, height: 512 },
     image: OG_IMAGE,
     description: R.t(ctx.lang, 'meta_description'),
     telephone: `+${R.waNumber(ctx)}`,
     address: { '@type': 'PostalAddress', addressLocality: R.setting(ctx, 'address') || 'Бишкек', addressCountry: 'KG' },
     areaServed: 'KG',
     currenciesAccepted: 'KGS',
-    sameAs: [`https://instagram.com/${R.igHandle(ctx)}`],
+    sameAs: [`https://instagram.com/${R.igHandle(ctx)}`, ...String(R.setting({ ...ctx, lang: 'ru' }, 'same_as') || '').split(/\s+/).filter((u) => /^https:\/\//.test(u))],
+    brand: ctx.data.brands.map((b) => ({ '@type': 'Brand', name: b.name })),
+    knowsAbout: ['уход против выпадения волос', 'тоники для роста волос', 'шампуни против выпадения волос', 'hair loss treatment'],
   };
 }
 
-function productLd(ctx, p, pageUrl) {
+function productLd(ctx, p, pageUrl = SITE + R.productUrl(ctx, p)) {
   const img = p.image_url && ctx.images?.[p.image_url];
   const image = img ? SITE + img.variants[img.variants.length - 1].webp : (p.image_url?.startsWith('/') ? SITE + p.image_url : p.image_url || undefined);
   const brand = R.brandOf(ctx, p);
   const item = {
     '@type': 'Product',
     name: R.loc(ctx.lang, p, 'name'),
-    description: R.loc(ctx.lang, p, 'description') || undefined,
+    description: R.loc(ctx.lang, p, 'description') || [R.loc(ctx.lang, p, 'name'), brand && (R.loc(ctx.lang, brand, 'tagline') || R.loc(ctx.lang, brand, 'description'))].filter(Boolean).join(' — '),
     image,
     brand: brand ? { '@type': 'Brand', name: brand.name } : undefined,
     category: R.t(ctx.lang, 'cat')[p.category] || undefined,
+    sku: R.productSlug(ctx, p),
+    url: SITE + R.productUrl(ctx, p),
   };
   if (R.hasPrice(p)) {
     item.offers = {
       '@type': 'Offer', price: Number(p.price_kgs), priceCurrency: 'KGS',
       availability: p.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: pageUrl, seller: { '@id': `${SITE}/#store` },
+      url: SITE + R.productUrl(ctx, p), seller: { '@id': `${SITE}/#store` },
+      itemCondition: 'https://schema.org/NewCondition',
     };
   }
   return item;
@@ -60,6 +66,15 @@ const breadcrumbs = (items) => ({
 });
 
 /* ---------- layout ---------- */
+// Search Console / Yandex Webmaster codes, entered in admin → «Тексты сайта»
+function verification(ctx) {
+  const v = (key) => String(ctx.data.settings?.[key]?.ru || '').trim().replace(/^.*content="([^"]+)".*$/, '$1');
+  const g = v('google_site_verification');
+  const y = v('yandex_verification');
+  return (g ? `\n  <meta name="google-site-verification" content="${R.esc(g)}">` : '')
+    + (y ? `\n  <meta name="yandex-verification" content="${R.esc(y)}">` : '');
+}
+
 function layout(ctx, page) {
   const { lang } = ctx;
   const T = (k) => R.esc(R.t(lang, k));
@@ -82,7 +97,7 @@ function layout(ctx, page) {
   // '/assets/…?v=<content hash>': new releases always load their own files
   const asset = (u) => (ctx.assetVersions?.[u] ? `${u}?v=${ctx.assetVersions[u]}` : u);
   const bake = {
-    lang, page: page.kind, brand: page.brand?.slug ?? null, post: page.post?.id ?? null, sig: ctx.sig,
+    lang, page: page.kind, brand: page.brand?.slug ?? null, post: page.post?.id ?? null, product: page.product?.id ?? null, sig: ctx.sig,
     data: ctx.data, images: ctx.images, brandLogos: ctx.brandLogos, popularity: ctx.popularity,
   };
 
@@ -97,14 +112,13 @@ function layout(ctx, page) {
   ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${SITE}${R.path(l, page.path)}">`).join('\n  ')}
   <link rel="alternate" hreflang="x-default" href="${SITE}${R.path('ru', page.path)}">
   <meta name="theme-color" content="#1D5C40">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="${page.ogType || 'website'}">${verification(ctx)}
   <meta property="og:site_name" content="Fabao">
   <meta property="og:url" content="${url}">
   <meta property="og:title" content="${R.esc(page.ogTitle || page.title)}">
   <meta property="og:description" content="${R.esc(page.description)}">
-  <meta property="og:image" content="${OG_IMAGE}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="${page.ogImage || OG_IMAGE}">
+  ${page.ogImage ? '' : '<meta property="og:image:width" content="1200">\n  <meta property="og:image:height" content="630">'}
   <meta property="og:image:alt" content="${T('og_image_alt')}">
   <meta property="og:locale" content="${lang === 'ky' ? 'ky_KG' : 'ru_RU'}">
   <meta property="og:locale:alternate" content="${lang === 'ky' ? 'ru_RU' : 'ky_KG'}">
@@ -161,6 +175,7 @@ ${page.body}
     <div class="wrap footer-inner">
       <span class="wordmark wordmark-footer" role="img" aria-label="Fabao"></span>
       <nav class="footer-nav" aria-label="${T('nav_label')}">${nav.slice(0, 3).map(([, href, label]) => `<a href="${href}">${T(label)}</a>`).join('')}<a href="${home}#contacts">${T('nav_contacts')}</a></nav>
+      <nav class="footer-links" aria-label="${T('all_categories')}">${R.presentCategories(ctx).map((c) => `<a href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}${ctx.data.brands.map((b) => `<a href="${R.brandUrl(ctx, b)}">${R.esc(b.name)}</a>`).join('')}</nav>
       <p>${T('footer_rights')}</p>
       <p class="muted">© <span class="js-year">${new Date().getFullYear()}</span> Fabao</p>
     </div>
@@ -327,7 +342,8 @@ ${orderSections(ctx)}`;
   return layout(ctx, {
     kind: 'home', path: '/', active: null, body,
     title: R.t(lang, 'meta_title'), ogTitle: R.t(lang, 'og_title'), description: R.t(lang, 'meta_description'),
-    ld: [{ '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: 'Fabao', inLanguage: LANGS, publisher: { '@id': `${SITE}/#store` } },
+    ld: [{ '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: 'Fabao', alternateName: ['Фабао', 'fabao.hair'], inLanguage: LANGS, publisher: { '@id': `${SITE}/#store` },
+      potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/products/?q={search_term_string}` }, 'query-input': 'required name=search_term_string' } },
       itemList(ctx, R.t(lang, 'popular_products_title'), products, SITE + R.path(lang, '/'))],
   });
 }
@@ -436,6 +452,7 @@ function productsPage(ctx) {
       <div class="wrap">
         <h1>${T('products_page_title')}</h1>
         <p class="lead">${T('products_page_lead')}</p>
+        <nav class="category-links" aria-label="${T('all_categories')}">${R.presentCategories(ctx).map((c) => `<a class="chip" href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}</nav>
       </div>
     </section>
     <section class="section section-flush">
@@ -520,11 +537,85 @@ ${more.length ? `
     </section>` : ''}`;
   return layout(ctx, {
     kind: 'post', path: pagePath, active: 'blog', post, body,
-    title: `${title} · Fabao`, description: excerpt || title,
+    title: `${title} · Fabao`.length > 75 ? title : `${title} · Fabao`, description: excerpt || title,
     ld: [{ '@type': 'BlogPosting', headline: title, description: excerpt || undefined, image: imageUrl, datePublished: post.published_on,
       dateModified: (post.updated_at || post.published_on || '').slice(0, 10), inLanguage: lang, url: SITE + R.path(lang, pagePath),
       author: { '@id': `${SITE}/#store` }, publisher: { '@id': `${SITE}/#store` } },
     breadcrumbs([[R.t(lang, 'nav_home'), SITE + R.path(lang, '/')], [R.t(lang, 'blog_page_title'), SITE + R.path(lang, '/blog/')], [title, SITE + R.path(lang, pagePath)]])],
+  });
+}
+
+const imgUrl = (ctx, url) => {
+  if (!url) return undefined;
+  const img = ctx.images?.[url];
+  if (img) return SITE + img.variants[img.variants.length - 1].webp;
+  return url.startsWith('/') ? SITE + url : url;
+};
+const clip = (text, n) => { const t = String(text || '').replace(/\s+/g, ' ').trim(); return t.length > n ? `${t.slice(0, n - 1).replace(/[\s,.;:—-]+\S*$/, '')}…` : t; };
+
+function productPage(ctx, p) {
+  const { lang } = ctx;
+  const T = (k) => R.esc(R.t(lang, k));
+  const name = R.loc(lang, p, 'name');
+  const b = R.brandOf(ctx, p);
+  const cat = R.t(lang, 'cat')[p.category];
+  const pagePath = `/products/${R.productSlug(ctx, p)}/`;
+  const related = R.rankProducts(ctx, ctx.data.products.filter((x) => x.id !== p.id && (x.category === p.category || x.brand_id === p.brand_id)))
+    .sort((a, c) => (c.category === p.category) - (a.category === p.category)).slice(0, 4);
+  const crumbs = [[R.t(lang, 'nav_home'), R.path(lang, '/')], [R.t(lang, 'catalog_label'), R.path(lang, '/products/')]];
+  if (cat) crumbs.push([R.catSeo(lang, p.category).h1, R.categoryUrl(ctx, p.category)]);
+  crumbs.push([name, R.path(lang, pagePath)]);
+  const body = `
+    <section class="section product-page">
+      <div class="wrap">
+        <nav class="crumbs crumbs-trail" aria-label="${T('nav_label')}">${crumbs.slice(0, -1).map(([n, u]) => `<a href="${u}">${R.esc(n)}</a>`).join(' / ')}</nav>
+        <div data-r="product-main">${R.productMain(ctx, p)}</div>
+      </div>
+    </section>
+${related.length ? `
+    <section class="section section-tint">
+      <div class="wrap">
+        ${sectionHead(T('product_more'), '', cat ? `<a class="btn btn-line" href="${R.categoryUrl(ctx, p.category)}">${R.esc(R.catSeo(lang, p.category).h1)}</a>` : '')}
+        <div class="product-grid">${R.productCards(ctx, related)}</div>
+      </div>
+    </section>` : ''}`;
+  const text = clip(R.loc(lang, p, 'description'), 110);
+  return layout(ctx, {
+    kind: 'product', path: pagePath, active: 'products', product: p, body,
+    title: (() => { const full = R.t(lang, 'meta_product_title').replace('{name}', name); return full.length > 70 ? `${name} | Fabao` : full; })(),
+    description: clip(R.t(lang, 'meta_product_desc').replace('{name}', name).replace('{brand}', b?.name || 'Fabao').replace('{text}', text), 300),
+    ogImage: imgUrl(ctx, p.image_url), ogType: 'product',
+    ld: [productLd(ctx, p), breadcrumbs(crumbs.map(([n, u]) => [n, SITE + u]))],
+  });
+}
+
+function categoryPage(ctx, cat) {
+  const { lang } = ctx;
+  const T = (k) => R.esc(R.t(lang, k));
+  const seo = R.catSeo(lang, cat);
+  const products = R.rankProducts(ctx, ctx.data.products.filter((p) => p.category === cat));
+  const pagePath = `/catalog/${R.CATEGORY_SLUGS[cat]}/`;
+  const others = R.presentCategories(ctx).filter((c) => c !== cat);
+  const body = `
+    <section class="page-head">
+      <div class="wrap">
+        <nav class="crumbs crumbs-trail" aria-label="${T('nav_label')}"><a href="${R.path(lang, '/')}">${T('nav_home')}</a> / <a href="${R.path(lang, '/products/')}">${T('catalog_label')}</a></nav>
+        <h1>${R.esc(seo.h1)}</h1>
+        <p class="lead">${R.esc(seo.intro)}</p>
+      </div>
+    </section>
+    <section class="section section-flush">
+      <div class="wrap">
+        <div class="product-grid" data-r="category" data-cat="${R.esc(cat)}">${R.productCards(ctx, products)}</div>
+        ${others.length ? `<nav class="category-links category-links-bottom" aria-label="${T('all_categories')}">${others.map((c) => `<a class="chip" href="${R.categoryUrl(ctx, c)}">${R.esc(R.catSeo(lang, c).h1)}</a>`).join('')}</nav>` : ''}
+      </div>
+    </section>`;
+  return layout(ctx, {
+    kind: 'category', path: pagePath, active: 'products', body,
+    title: seo.title, description: seo.desc,
+    ld: [{ '@type': 'CollectionPage', name: seo.h1, description: seo.desc, url: SITE + R.path(lang, pagePath), inLanguage: lang },
+      itemList(ctx, seo.h1, products, SITE + R.path(lang, pagePath)),
+      breadcrumbs([[R.t(lang, 'nav_home'), SITE + R.path(lang, '/')], [R.t(lang, 'catalog_label'), SITE + R.path(lang, '/products/')], [seo.h1, SITE + R.path(lang, pagePath)]])],
   });
 }
 
@@ -539,24 +630,38 @@ export function renderSite(base) {
     files.push([`${dir}products/index.html`, productsPage(ctx)]);
     for (const b of ctx.data.brands) files.push([`${dir}brands/${b.slug}/index.html`, brandPage(ctx, b)]);
     files.push([`${dir}blog/index.html`, blogPage(ctx)]);
+    for (const p of ctx.data.products) files.push([`${dir}products/${R.productSlug(ctx, p)}/index.html`, productPage(ctx, p)]);
+    for (const c of R.presentCategories(ctx)) files.push([`${dir}catalog/${R.CATEGORY_SLUGS[c]}/index.html`, categoryPage(ctx, c)]);
     for (const post of R.publishedPosts(ctx)) files.push([`${dir}blog/${post.slug}/index.html`, postPage(ctx, post)]);
   }
   return files;
 }
 
-export function pagePaths(data) {
+export function pagePaths(data, images = {}) {
+  const ctx = { data, images, lang: 'ru' };
   const posts = (data.posts || []).filter((p) => !p.published_on || p.published_on <= R.today());
-  return ['/', '/brands/', '/products/', '/blog/', ...data.brands.map((b) => `/brands/${b.slug}/`), ...posts.map((p) => `/blog/${p.slug}/`)];
+  const img = (u) => (u ? [imgUrl(ctx, u)] : []);
+  return [
+    { path: '/', images: [OG_IMAGE] },
+    { path: '/brands/' },
+    { path: '/products/' },
+    { path: '/blog/' },
+    ...data.brands.map((b) => ({ path: `/brands/${b.slug}/` })),
+    ...R.presentCategories(ctx).map((c) => ({ path: `/catalog/${R.CATEGORY_SLUGS[c]}/` })),
+    ...data.products.map((p) => ({ path: `/products/${R.productSlug(ctx, p)}/`, images: img(p.image_url) })),
+    ...posts.map((p) => ({ path: `/blog/${p.slug}/`, images: img(p.cover_url) })),
+  ];
 }
 
-export function renderSitemap(paths, lastmod) {
-  const urls = paths.flatMap((p) => LANGS.map((l) => `  <url>
+export function renderSitemap(entries, lastmod) {
+  const urls = entries.flatMap(({ path: p, images = [] }) => LANGS.map((l) => `  <url>
     <loc>${SITE}${R.path(l, p)}</loc>
     <lastmod>${lastmod}</lastmod>
 ${LANGS.map((x) => `    <xhtml:link rel="alternate" hreflang="${x}" href="${SITE}${R.path(x, p)}"/>`).join('\n')}
-  </url>`)).join('\n');
+${images.filter(Boolean).map((u) => `    <image:image><image:loc>${R.esc(u)}</image:loc></image:image>`).join('\n')}
+  </url>`.replace(/\n\n/g, '\n'))).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls}
 </urlset>
 `;

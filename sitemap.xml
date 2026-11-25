@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.fabao.hair/</loc>
     <lastmod>2026-11-25</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/og-image.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://www.fabao.hair/ky/</loc>
     <lastmod>2026-11-25</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/og-image.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://www.fabao.hair/brands/</loc>
@@ -85,15 +87,245 @@
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/brands/follicell/"/>
   </url>
   <url>
+    <loc>https://www.fabao.hair/catalog/toniki/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/toniki/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/toniki/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/catalog/toniki/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/toniki/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/toniki/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/catalog/shampuni/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/shampuni/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/shampuni/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/catalog/shampuni/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/shampuni/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/shampuni/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/catalog/maski/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/maski/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/maski/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/catalog/maski/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/maski/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/maski/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/catalog/syvorotki/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/syvorotki/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/syvorotki/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/catalog/syvorotki/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/syvorotki/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/syvorotki/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/catalog/kondicionery/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/kondicionery/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/kondicionery/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/catalog/kondicionery/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/catalog/kondicionery/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/catalog/kondicionery/"/>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/tonik-101b-ot-vypadeniya-volos/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/tonik-101b-ot-vypadeniya-volos/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/tonik-101b-ot-vypadeniya-volos/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/deb900c8206c-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/tonik-101b-ot-vypadeniya-volos/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/tonik-101b-ot-vypadeniya-volos/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/tonik-101b-ot-vypadeniya-volos/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/deb900c8206c-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/zhenshenevyy-shampun/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/zhenshenevyy-shampun/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/zhenshenevyy-shampun/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/9ff77a68865b-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/zhenshenevyy-shampun/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/zhenshenevyy-shampun/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/zhenshenevyy-shampun/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/9ff77a68865b-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/regeneriruyuschaya-maska/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/regeneriruyuschaya-maska/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/regeneriruyuschaya-maska/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/247951643ff0-750.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/regeneriruyuschaya-maska/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/regeneriruyuschaya-maska/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/regeneriruyuschaya-maska/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/247951643ff0-750.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/peptidnyy-kokteyl/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/peptidnyy-kokteyl/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/peptidnyy-kokteyl/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/e396a88ea475-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/peptidnyy-kokteyl/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/peptidnyy-kokteyl/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/peptidnyy-kokteyl/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/e396a88ea475-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/ukreplyayuschiy-shampun-protiv-vypadeniya/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/ukreplyayuschiy-shampun-protiv-vypadeniya/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/ukreplyayuschiy-shampun-protiv-vypadeniya/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/27f0d0ea4843-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/ukreplyayuschiy-shampun-protiv-vypadeniya/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/ukreplyayuschiy-shampun-protiv-vypadeniya/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/ukreplyayuschiy-shampun-protiv-vypadeniya/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/27f0d0ea4843-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/96cdf03919a4-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/seboreguliruyuschiy-shampun-s-mylnym-orehom/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/96cdf03919a4-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/shampun-9-trav/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/shampun-9-trav/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/shampun-9-trav/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/fcdec6e71b1d-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/shampun-9-trav/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/shampun-9-trav/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/shampun-9-trav/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/fcdec6e71b1d-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/shampun-dlya-okrashennyh-volos/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/shampun-dlya-okrashennyh-volos/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/shampun-dlya-okrashennyh-volos/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/7c33f1689012-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/shampun-dlya-okrashennyh-volos/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/shampun-dlya-okrashennyh-volos/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/shampun-dlya-okrashennyh-volos/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/7c33f1689012-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/uvlazhnyayuschiy-konditsioner-s-travami/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/uvlazhnyayuschiy-konditsioner-s-travami/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/uvlazhnyayuschiy-konditsioner-s-travami/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/dc8aebb4cd11-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/uvlazhnyayuschiy-konditsioner-s-travami/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/uvlazhnyayuschiy-konditsioner-s-travami/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/uvlazhnyayuschiy-konditsioner-s-travami/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/dc8aebb4cd11-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/dekohair/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/dekohair/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/dekohair/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/837becbb86c7-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/dekohair/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/dekohair/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/dekohair/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/837becbb86c7-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/tonik-intensivnoe-pitanie/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/tonik-intensivnoe-pitanie/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/tonik-intensivnoe-pitanie/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/10f3ecec3f24-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/tonik-intensivnoe-pitanie/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/tonik-intensivnoe-pitanie/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/tonik-intensivnoe-pitanie/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/10f3ecec3f24-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/products/zhenshenevyy-tonik/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/zhenshenevyy-tonik/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/zhenshenevyy-tonik/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/89d918a2a1fc-960.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://www.fabao.hair/ky/products/zhenshenevyy-tonik/</loc>
+    <lastmod>2026-11-25</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/products/zhenshenevyy-tonik/"/>
+    <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/products/zhenshenevyy-tonik/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/89d918a2a1fc-960.webp</image:loc></image:image>
+  </url>
+  <url>
     <loc>https://www.fabao.hair/blog/kak-vybrat-tonik-101/</loc>
     <lastmod>2026-11-25</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/kak-vybrat-tonik-101/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/7d16c382a67d-1040.webp</image:loc></image:image>
   </url>
   <url>
     <loc>https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/</loc>
     <lastmod>2026-11-25</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://www.fabao.hair/blog/kak-vybrat-tonik-101/"/>
     <xhtml:link rel="alternate" hreflang="ky" href="https://www.fabao.hair/ky/blog/kak-vybrat-tonik-101/"/>
+    <image:image><image:loc>https://www.fabao.hair/assets/img/p/7d16c382a67d-1040.webp</image:loc></image:image>
   </url>
 </urlset>

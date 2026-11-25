@@ -446,3 +446,34 @@ button { font: inherit; }
   .modal-img img { object-fit: contain; background: #fff; }
   .modal-text { max-height: none; overflow: visible; padding: 26px; }
 }
+
+/* ---------- SEO pages: product page, category links ---------- */
+a.product-title { text-decoration: none; display: inline; }
+a.product-title:hover { color: var(--emerald); text-decoration: underline; text-underline-offset: 3px; }
+.crumbs-trail { margin-bottom: 18px; color: var(--mute); font-size: .88rem; }
+.crumbs-trail a { color: var(--mute); text-decoration: none; font-weight: 600; }
+.crumbs-trail a:hover { color: var(--emerald); }
+.product-page { padding-top: 32px; }
+.product-page-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.product-page-img { background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; color: var(--emerald); position: sticky; top: 96px; }
+.product-page-img picture, .product-page-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.product-page-img .wordmark { width: 40%; }
+.product-page-text h1 { color: var(--emerald-deep); font-size: clamp(2rem, 4vw, 2.8rem); margin: .2em 0 .4em; }
+.product-page-text h2 { font-size: 1.5rem; margin: 1.6em 0 .4em; }
+.product-page-buy { display: flex; align-items: center; gap: 14px; }
+.product-page-buy .price { font-size: 1.5rem; }
+.product-facts { margin: 1.6rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.product-facts div { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.product-facts dt { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.product-facts dd { margin: 2px 0 0; font-weight: 600; }
+.product-facts a { color: var(--emerald); text-decoration: none; }
+.category-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.category-links .chip { text-decoration: none; }
+.category-links-bottom { margin-top: 36px; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 6px 16px; width: 100%; }
+.footer-links a { color: rgba(243, 238, 227, .72); text-decoration: none; font-size: .85rem; }
+.footer-links a:hover { color: var(--gold-soft); }
+@media (max-width: 860px) {
+  .product-page-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .product-page-img { position: static; aspect-ratio: 4 / 3; }
+}
