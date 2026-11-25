@@ -2,7 +2,9 @@
 
 Website of Fabao, the official distributor of ZhangGuang 101, DekoHair and Follicell in Kyrgyzstan.
 
-- `index.html` (ru) and `ky/index.html` (ky): the public site, **generated** by `npm run build`. Don't edit them by hand.
+- Public pages, **generated** by `npm run build` (don't edit by hand), each in ru (`/`) and ky (`/ky/`): home (`index.html`: promo slider, popular brands and products, how to order, wholesale, contacts), `brands/` (all brands), `brands/<slug>/` (brand page), `products/` (catalog with search, brand/category filters, sort).
+- Cart: in the browser (localStorage), on every page; checkout opens WhatsApp with the order text. No online payment.
+- Popularity: `catalog_popularity()` in Supabase scores products/brands from `site_events`; ★ products (is_featured) always come first. Pages store ranks, not scores, so the hourly bake only commits when the order changes.
 - `scripts/build.mjs` + `scripts/page.mjs`: read the published content from Supabase (read-only) and bake it into static HTML, `sitemap.xml` and AVIF/WebP images in `assets/img/p/`.
 - `assets/js/render.js`: HTML templates shared by the build and the browser. `assets/js/site.js` adds the brand filter and product dialog and re-renders if the database changed since the last bake.
 - `assets/js/i18n.js`: interface texts in Russian and Kyrgyz.
