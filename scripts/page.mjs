@@ -487,7 +487,11 @@ function postPage(ctx, post) {
   const excerpt = R.loc(lang, post, 'excerpt');
   const brand = post.brand_id && ctx.data.brands.find((b) => b.id === post.brand_id);
   const more = R.publishedPosts(ctx).filter((p) => p.id !== post.id).slice(0, 3);
-  const brandProducts = brand ? R.rankProducts(ctx, ctx.data.products.filter((p) => p.brand_id === brand.id)).slice(0, 4) : [];
+  // products of the story's category first: a story titled «Тоники …» shows the tonics
+  const titleLc = R.loc(lang, post, 'title').toLowerCase();
+  const inTitle = (p) => { const cat = (R.t(lang, 'cat')[p.category] || '').toLowerCase(); return cat && titleLc.includes(cat) ? 1 : 0; };
+  const brandProducts = brand ? R.rankProducts(ctx, ctx.data.products.filter((p) => p.brand_id === brand.id))
+    .map((p, i) => [p, i]).sort((a, b) => (inTitle(b[0]) - inTitle(a[0])) || (a[1] - b[1])).map(([p]) => p).slice(0, 4) : [];
   const pagePath = `/blog/${post.slug}/`;
   const img = post.cover_url && ctx.images?.[post.cover_url];
   const imageUrl = img ? SITE + img.variants[img.variants.length - 1].webp : undefined;
