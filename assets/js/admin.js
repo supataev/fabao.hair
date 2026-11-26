@@ -22,8 +22,29 @@ const TEXT_FIELDS = [
   { key: 'yandex_verification', label: 'Яндекс Вебмастер — код подтверждения (содержимое content из meta-тега)', single: true },
 ];
 
+/* ---------- roles ----------
+   The same table as public.can() in supabase/patches/2026-11-roles.sql. The
+   database enforces it; here it only decides what the panel shows. */
+const ROLES = {
+  owner: 'Владелец',
+  general_manager: 'Генеральный менеджер',
+  sales_manager: 'Менеджер по продажам',
+  agent: 'Агент',
+};
+const PERMS = {
+  team: ['owner'],
+  stats_reset: ['owner'],
+  content: ['owner', 'general_manager'],
+  products_delete: ['owner', 'general_manager'],
+  products: ['owner', 'general_manager', 'sales_manager'],
+  upload: ['owner', 'general_manager', 'sales_manager'],
+  stats: ['owner', 'general_manager', 'sales_manager'],
+};
+const TAB_PERM = { products: null, brands: 'content', texts: 'content', promos: 'content', posts: 'content', stats: 'stats', team: 'team' };
+const can = (perm) => (PERMS[perm] ?? []).includes(state.role);
+
 let sb;
-const state = { brands: [], products: [], settings: {}, promos: [], promosReady: true, posts: [], postsReady: true, editingPost: null, pendingPostImage: undefined, slugTouched: false, editingProduct: null, editingBrand: null, editingPromo: null, pendingImage: undefined, pendingPromoImage: undefined };
+const state = { role: null, email: '', team: [], brands: [], products: [], settings: {}, promos: [], promosReady: true, posts: [], postsReady: true, editingPost: null, pendingPostImage: undefined, slugTouched: false, editingProduct: null, editingBrand: null, editingPromo: null, pendingImage: undefined, pendingPromoImage: undefined };
 
 /* ---------- helpers ---------- */
 function show(screen) {
@@ -127,7 +148,12 @@ async function enter(session, freshSignIn = false) {
     show('denied');
     return;
   }
-  $('.js-who').textContent = session.user.email;
+  // before the roles patch runs there is no staff_role(): everyone listed is a full admin
+  const role = await sb.rpc('staff_role');
+  state.role = role.error ? 'owner' : role.data;
+  state.email = session.user.email.toLowerCase();
+  applyRole();
+  $('.js-who').textContent = `${session.user.email} · ${ROLES[state.role] ?? state.role}`;
   show('app');
   scheduleIdleCheck();
   await loadAll();
@@ -170,10 +196,24 @@ $$('.js-logout').forEach((b) => b.addEventListener('click', async () => {
 }));
 
 /* ---------- tabs ---------- */
-$$('[data-tab][role=tab]').forEach((btn) => btn.addEventListener('click', () => {
-  $$('[role=tab]').forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
-  $$('.js-tab').forEach((p) => { p.hidden = p.dataset.tab !== btn.dataset.tab; });
-}));
+function openTab(name) {
+  $$('[role=tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  $$('.js-tab').forEach((p) => { p.hidden = p.dataset.tab !== name; });
+}
+$$('[data-tab][role=tab]').forEach((btn) => btn.addEventListener('click', () => openTab(btn.dataset.tab)));
+
+// Show each role only the tabs and buttons it may use.
+function applyRole() {
+  document.body.dataset.role = state.role;
+  $$('[data-tab][role=tab]').forEach((btn) => {
+    const perm = TAB_PERM[btn.dataset.tab];
+    btn.hidden = Boolean(perm) && !can(perm);
+  });
+  const current = $('[role=tab][aria-selected=true]');
+  if (!current || current.hidden) openTab('products');
+  $('.js-add-product').hidden = !can('products');
+  $('.js-products-note').hidden = can('products');
+}
 
 /* ---------- data ---------- */
 async function loadAll() {
@@ -232,12 +272,12 @@ function renderProducts() {
     el('td', { text: fmtPrice(p.price_kgs) }),
     el('td', {}, toggle(p.in_stock, (v) => quickUpdate(p, { in_stock: v }))),
     el('td', {}, toggle(p.is_published, (v) => quickUpdate(p, { is_published: v }))),
-    el('td', { class: 'actions' }, el('button', { type: 'button', class: 'btn btn-small', text: 'Изменить', onclick: () => openProduct(p) })),
+    el('td', { class: 'actions' }, el('button', { type: 'button', class: 'btn btn-small', text: can('products') ? 'Изменить' : 'Открыть', onclick: () => openProduct(p) })),
   )));
 }
 
 function toggle(checked, onChange) {
-  const input = el('input', { type: 'checkbox', checked, onchange: (e) => onChange(e.target.checked) });
+  const input = el('input', { type: 'checkbox', checked, disabled: !can('products'), onchange: (e) => onChange(e.target.checked) });
   return el('label', { class: 'switch' }, input, el('span'));
 }
 
@@ -257,8 +297,11 @@ function openProduct(p) {
   state.pendingImage = undefined;
   const form = $('.js-product-form');
   form.reset();
-  $('.js-product-title').textContent = p ? 'Редактировать товар' : 'Новый товар';
-  $('.js-delete-product').hidden = !p;
+  const readOnly = !can('products');
+  $('.js-product-title').textContent = readOnly ? 'Товар' : p ? 'Редактировать товар' : 'Новый товар';
+  $('.js-delete-product').hidden = !p || !can('products_delete');
+  $$('input, select, textarea', form).forEach((input) => { input.disabled = readOnly; });
+  $$('.file-btn, .js-image-remove, [type=submit]', form).forEach((n) => { n.hidden = readOnly; });
   $('.js-product-msg').textContent = '';
   const data = p ?? { in_stock: true, is_published: true, is_featured: false, sort_order: (state.products.at(-1)?.sort_order ?? 0) + 1 };
   for (const input of form.elements) {
@@ -890,6 +933,59 @@ async function loadStats() {
 }
 
 $('.js-stats-days').addEventListener('change', loadStats);
+
+/* ---------- team (owner only) ---------- */
+const roleSelect = (value, attrs = {}) => {
+  const s = el('select', attrs, ...Object.entries(ROLES).map(([v, label]) => el('option', { value: v, text: label })));
+  s.value = value;
+  return s;
+};
+
+async function loadTeam() {
+  const body = $('.js-team');
+  const { data, error } = await sb.from('staff').select('*').order('created_at');
+  if (error) { body.replaceChildren(el('tr', {}, el('td', { colspan: 4, class: 'empty', text: 'Ошибка: ' + error.message }))); return; }
+  state.team = data;
+  body.replaceChildren(...data.map((m) => el('tr', {},
+    el('td', {}, el('b', { text: m.email }), m.email === state.email ? el('span', { class: 'tag', text: 'это вы' }) : null),
+    el('td', { text: m.name ?? '' }),
+    el('td', {}, roleSelect(m.role ?? 'owner', { 'aria-label': 'Роль', onchange: (e) => updateMember(m, { role: e.target.value }, e.target) })),
+    el('td', { class: 'actions' }, el('button', { type: 'button', class: 'btn btn-small btn-danger', text: 'Убрать', onclick: (e) => removeMember(m, e.target) })),
+  )));
+}
+
+async function updateMember(m, patch, select) {
+  const { error } = await sb.from('staff').update(patch).eq('email', m.email);
+  if (error) { toast('Не сохранилось: ' + error.message, true); select.value = m.role; return; }
+  Object.assign(m, patch);
+  toast('Роль изменена');
+}
+
+async function removeMember(m, btn) {
+  if (btn.dataset.confirm !== 'yes') {
+    btn.dataset.confirm = 'yes';
+    btn.textContent = 'Точно убрать?';
+    setTimeout(() => { btn.dataset.confirm = ''; btn.textContent = 'Убрать'; }, 4000);
+    return;
+  }
+  const { error } = await sb.from('staff').delete().eq('email', m.email);
+  if (error) { toast('Не получилось: ' + error.message, true); return; }
+  toast(`${m.email} больше не может входить в панель`);
+  await loadTeam();
+}
+
+$('.js-team-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const email = String(f.get('email')).trim().toLowerCase();
+  const msg = $('.js-team-msg');
+  const { error } = await sb.from('staff').insert({ email, name: emptyToNull(String(f.get('name')).trim()), role: f.get('role') });
+  if (error) { msg.textContent = error.code === '23505' ? 'Этот человек уже в команде.' : 'Ошибка: ' + error.message; return; }
+  e.target.reset();
+  msg.textContent = `Добавлен. Теперь пригласите ${email} в Supabase → Authentication → Users → Invite user: придёт письмо, по ссылке человек задаст пароль.`;
+  await loadTeam();
+});
+$('[role=tab][data-tab=team]').addEventListener('click', loadTeam);
 $('[role=tab][data-tab=stats]').addEventListener('click', loadStats);
 
 $$('dialog').forEach((d) => {

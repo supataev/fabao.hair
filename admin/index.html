@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=roles1">
 </head>
 <body>
   <!-- Not configured -->
@@ -66,6 +66,7 @@
         <button type="button" role="tab" data-tab="promos">Карусель</button>
         <button type="button" role="tab" data-tab="posts">Блог</button>
         <button type="button" role="tab" data-tab="stats">Статистика</button>
+        <button type="button" role="tab" data-tab="team" hidden>Команда</button>
       </nav>
       <div class="topbar-right">
         <a class="btn-link" href="../" target="_blank" rel="noopener">Открыть сайт ↗</a>
@@ -83,6 +84,7 @@
           <select class="js-brand-filter"></select>
           <button class="btn btn-primary js-add-product" type="button">+ Добавить товар</button>
         </div>
+        <p class="hint js-products-note" hidden>Вы можете смотреть каталог. Изменять товары могут менеджеры.</p>
         <div class="table-wrap">
           <table class="table">
             <thead><tr><th></th><th>Название</th><th>Бренд</th><th>Цена</th><th>В наличии</th><th>На сайте</th><th></th></tr></thead>
@@ -183,6 +185,32 @@
               <tbody class="js-stats-days-table"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+      <!-- Team (owner only) -->
+      <div class="panel js-tab" data-tab="team" hidden>
+        <div class="toolbar"><h2>Команда</h2></div>
+        <form class="settings-card team-form js-team-form">
+          <div>
+            <h3>Добавить человека</h3>
+            <p class="hint">Генеральный менеджер — всё, кроме команды. Менеджер по продажам — товары и статистика. Агент — только смотрит каталог.</p>
+          </div>
+          <label>Эл. почта<input name="email" type="email" required autocomplete="off"></label>
+          <label>Имя<input name="name" autocomplete="off"></label>
+          <label>Роль<select name="role">
+            <option value="sales_manager">Менеджер по продажам</option>
+            <option value="general_manager">Генеральный менеджер</option>
+            <option value="agent">Агент</option>
+            <option value="owner">Владелец</option>
+          </select></label>
+          <button class="btn btn-primary" type="submit">Добавить</button>
+          <p class="msg js-team-msg" role="status"></p>
+        </form>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Эл. почта</th><th>Имя</th><th>Роль</th><th></th></tr></thead>
+            <tbody class="js-team"></tbody>
+          </table>
         </div>
       </div>
     </main>
@@ -371,6 +399,6 @@
 
   <div class="toast js-toast" role="status" hidden></div>
 
-  <script type="module" src="../assets/js/admin.js"></script>
+  <script type="module" src="../assets/js/admin.js?v=roles1"></script>
 </body>
 </html>

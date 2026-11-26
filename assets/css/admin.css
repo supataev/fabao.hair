@@ -194,3 +194,7 @@ textarea { resize: vertical; }
   .stats-cards { grid-template-columns: 1fr 1fr; }
   .stat b { font-size: 1.6rem; }
 }
+
+/* Команда */
+.team-form .msg { flex-basis: 100%; margin: 0; }
+.team-form input[type=email] { min-width: 240px; }
